@@ -7,6 +7,7 @@
 - [ ] 질문 조회
   - [ ] 전체 조회
   - [ ] 단건 조회
+
 - [ ] 질문 수정
   - [ ] 요청의 id와 일치하는 질문이 존재해야한다.
   - [ ] title, contents, responderId는 기존 값과 같을 수 없다.
@@ -28,11 +29,9 @@ Request-Body
 ```
 
 201 CREATED
-
 Location : /questions/{id}
 
 body
-
 ```json
 {
   "id" : integer
