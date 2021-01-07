@@ -15,11 +15,8 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionResponse> create(@RequestBody QuestionRequest request) {
-        QuestionResponse response = new QuestionResponse(1L, request.getTitle(),
-                request.getContents(), request.getResponderId(),
-                LocalDateTime.now().toString(), LocalDateTime.now().toString());
-
-        return ResponseEntity.created(URI.create("/questions/1"))
+        QuestionResponse response = questionService.create(request);
+        return ResponseEntity.created(URI.create("/questions/" + response.getId()))
                 .body(response);
     }
 }

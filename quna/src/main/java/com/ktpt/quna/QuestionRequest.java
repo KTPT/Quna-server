@@ -17,6 +17,10 @@ public class QuestionRequest {
         this.responderId = responderId;
     }
 
+    public Question toEntity() {
+        return new Question(null, title, contents, responderId, null, null);
+    }
+
     public String getTitle() {
         return title;
     }
