@@ -1,6 +1,7 @@
 package com.ktpt.quna.presentation;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,12 @@ public class QuestionController {
     @GetMapping("/{id}")
     public ResponseEntity<QuestionResponse> findById(@PathVariable Long id) {
         QuestionResponse response = questionService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<QuestionResponse>> findAll() {
+        List<QuestionResponse> response = questionService.findAll();
         return ResponseEntity.ok(response);
     }
 }

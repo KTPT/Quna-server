@@ -1,5 +1,7 @@
 package com.ktpt.quna.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +33,9 @@ public class QuestionService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 Question, id = " + id));
 
         return QuestionResponse.from(question);
+    }
+
+    public List<QuestionResponse> findAll() {
+        return QuestionResponse.listOf(questionRepository.findAll());
     }
 }
