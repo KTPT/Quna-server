@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
@@ -23,5 +24,12 @@ public class QuestionService {
         Question saved = questionRepository.save(question.create());
 
         return QuestionResponse.from(saved);
+    }
+
+    public QuestionResponse findById(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 Question, id = " + id));
+
+        return QuestionResponse.from(question);
     }
 }
