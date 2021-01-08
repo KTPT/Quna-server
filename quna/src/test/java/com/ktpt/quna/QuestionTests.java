@@ -17,6 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktpt.quna.application.dto.QuestionRequest;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.domain.model.QuestionRepository;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)

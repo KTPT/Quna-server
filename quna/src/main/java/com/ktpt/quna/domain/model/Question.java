@@ -1,4 +1,4 @@
-package com.ktpt.quna;
+package com.ktpt.quna.domain.model;
 
 import java.time.LocalDateTime;
 

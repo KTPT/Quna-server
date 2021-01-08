@@ -1,4 +1,6 @@
-package com.ktpt.quna;
+package com.ktpt.quna.application.dto;
+
+import com.ktpt.quna.domain.model.Question;
 
 public class QuestionRequest {
     private final String title;

@@ -1,4 +1,6 @@
-package com.ktpt.quna;
+package com.ktpt.quna.application.dto;
+
+import com.ktpt.quna.domain.model.Question;
 
 public class QuestionResponse {
     private final Long id;
@@ -25,6 +27,12 @@ public class QuestionResponse {
         this.responderId = responderId;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
+    }
+
+    public static QuestionResponse from(Question question) {
+        return new QuestionResponse(question.getId(), question.getTitle(), question.getContents(),
+                question.getResponderId(), question.getCreatedAt().toString(),
+                question.getLastModifiedAt().toString());
     }
 
     public Long getId() {
