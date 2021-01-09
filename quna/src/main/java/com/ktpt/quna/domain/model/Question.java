@@ -37,6 +37,14 @@ public class Question {
         return this;
     }
 
+    public Question update(String title, String contents, Long responderId) {
+        this.title = title;
+        this.contents = contents;
+        this.responderId = responderId;
+        this.lastModifiedAt = LocalDateTime.now();
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
