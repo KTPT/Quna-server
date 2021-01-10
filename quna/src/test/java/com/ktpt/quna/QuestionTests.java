@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -117,5 +118,20 @@ public class QuestionTests {
         List<QuestionResponse> response = objectMapper.readValue(responseBody, collectionType);
 
         assertThat(response.size()).isEqualTo(2);
+    }
+
+    @Test
+    void delete() throws Exception {
+        Question fixture = createFixture("test", "test", null);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId()))
+            .andExpect(status().isNoContent())
+            .andDo(print());
+
+        assertThat(repository.findById(fixture.getId())).isNotPresent();
+    }
+
+    private Question createFixture(String title, String contents, Long responderId) {
+        return repository.save(new Question(null, title, contents, responderId, null, null));
     }
 }
