@@ -15,10 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
 @AutoConfigureMockMvc
@@ -64,5 +66,20 @@ public class QuestionTests {
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    void delete() throws Exception {
+        Question fixture = createFixture("test", "test", null);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId()))
+            .andExpect(status().isNoContent())
+            .andDo(print());
+
+        assertThat(repository.findById(fixture.getId())).isNotPresent();
+    }
+
+    private Question createFixture(String title, String contents, Long responderId) {
+        return repository.save(new Question(null, title, contents, responderId, null, null));
     }
 }

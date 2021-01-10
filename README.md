@@ -12,7 +12,7 @@
   - [ ] 요청의 id와 일치하는 질문이 존재해야한다.
   - [ ] title, contents, responderId는 기존 값과 같을 수 없다.
     
-- [ ] 질문 삭제
+- [x] 질문 삭제
     - [ ] 요청의 id와 일치하는 질문이 존재해야한다.
 
 **POST /questions**
