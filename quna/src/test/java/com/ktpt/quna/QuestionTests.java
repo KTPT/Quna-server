@@ -1,15 +1,11 @@
 package com.ktpt.quna;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.ktpt.quna.application.dto.QuestionRequest;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.domain.model.Question;
+import com.ktpt.quna.domain.model.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +16,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.ktpt.quna.application.dto.QuestionRequest;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import com.ktpt.quna.domain.model.Question;
-import com.ktpt.quna.domain.model.QuestionRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -70,6 +70,35 @@ public class QuestionTests {
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    void update() throws Exception {
+        Question saved = repository.save(new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+
+        String updatedTitle = "title1";
+        String updatedContents = "contents1";
+        String body = objectMapper.writeValueAsString(new QuestionRequest(updatedTitle, updatedContents, null));
+
+        MvcResult result = mockMvc.perform(put("/questions/" + saved.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
+
+        assertThat(response.getId()).isEqualTo(saved.getId());
+        assertThat(response.getTitle()).isEqualTo(updatedTitle);
+        assertThat(response.getContents()).isEqualTo(updatedContents);
+        assertThat(response.getResponderId()).isNull();
+        assertThat(response.getCreatedAt()).isNotNull();
+        assertThat(response.getLastModifiedAt()).isNotEqualTo(saved.getLastModifiedAt().toString());
     }
 
     @Test
@@ -125,8 +154,8 @@ public class QuestionTests {
         Question fixture = createFixture("test", "test", null);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId()))
-            .andExpect(status().isNoContent())
-            .andDo(print());
+                .andExpect(status().isNoContent())
+                .andDo(print());
 
         assertThat(repository.findById(fixture.getId())).isNotPresent();
     }

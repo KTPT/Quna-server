@@ -1,9 +1,9 @@
 package com.ktpt.quna.application.dto;
 
+import com.ktpt.quna.domain.model.Question;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.ktpt.quna.domain.model.Question;
 
 public class QuestionResponse {
     private final Long id;
