@@ -27,13 +27,16 @@ public class QuestionService {
         return QuestionResponse.from(saved);
     }
 
+    @Transactional
     public QuestionResponse update(Long id, QuestionRequest request) {
-        Question question = questionRepository.findById(id).get();
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 Question, id = " + id));
         Question saved = questionRepository.save(question.update(request.getTitle(), request.getContents(), request.getResponderId()));
 
         return QuestionResponse.from(saved);
     }
 
+    @Transactional(readOnly = true)
     public QuestionResponse findById(Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 Question, id = " + id));
@@ -41,6 +44,7 @@ public class QuestionService {
         return QuestionResponse.from(question);
     }
 
+    @Transactional(readOnly = true)
     public List<QuestionResponse> findAll() {
         return QuestionResponse.listOf(questionRepository.findAll());
     }
