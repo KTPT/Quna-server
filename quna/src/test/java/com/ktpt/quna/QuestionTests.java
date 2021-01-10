@@ -74,11 +74,13 @@ public class QuestionTests {
 
     @Test
     void update() throws Exception {
+        Question saved = repository.save(new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+
         String updatedTitle = "title1";
         String updatedContents = "contents1";
         String body = objectMapper.writeValueAsString(new QuestionRequest(updatedTitle, updatedContents, null));
 
-        MvcResult result = mockMvc.perform(put("/questions/1")
+        MvcResult result = mockMvc.perform(put("/questions/" + saved.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -91,12 +93,12 @@ public class QuestionTests {
 
         QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
 
-        assertThat(response.getId()).isEqualTo(1);
+        assertThat(response.getId()).isEqualTo(saved.getId());
         assertThat(response.getTitle()).isEqualTo(updatedTitle);
         assertThat(response.getContents()).isEqualTo(updatedContents);
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
-        assertThat(response.getLastModifiedAt()).isNotNull();
+        assertThat(response.getLastModifiedAt()).isNotEqualTo(saved.getLastModifiedAt().toString());
     }
 
     @Test
