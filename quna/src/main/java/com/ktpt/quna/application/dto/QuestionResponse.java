@@ -2,6 +2,9 @@ package com.ktpt.quna.application.dto;
 
 import com.ktpt.quna.domain.model.Question;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class QuestionResponse {
     private final Long id;
     private final String title;
@@ -33,6 +36,12 @@ public class QuestionResponse {
         return new QuestionResponse(question.getId(), question.getTitle(), question.getContents(),
                 question.getResponderId(), question.getCreatedAt().toString(),
                 question.getLastModifiedAt().toString());
+    }
+
+    public static List<QuestionResponse> listOf(List<Question> questions) {
+        return questions.stream()
+                .map(QuestionResponse::from)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
