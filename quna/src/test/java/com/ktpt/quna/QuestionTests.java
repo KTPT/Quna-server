@@ -7,6 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.domain.model.Question;
@@ -66,6 +70,54 @@ public class QuestionTests {
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    void findById() throws Exception {
+        String title = "title";
+        String contents = "contents";
+        Question saved = repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+
+        MvcResult result = mockMvc.perform(get("/questions/{id}", saved.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
+
+        assertThat(response.getId()).isEqualTo(saved.getId());
+        assertThat(response.getTitle()).isEqualTo(title);
+        assertThat(response.getContents()).isEqualTo(contents);
+        assertThat(response.getResponderId()).isNull();
+        assertThat(response.getCreatedAt()).isNotNull();
+        assertThat(response.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    void findAll() throws Exception {
+        String title = "title";
+        String contents = "contents";
+        repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+        repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+
+        MvcResult result = mockMvc.perform(get("/questions")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        CollectionType collectionType = objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, QuestionResponse.class);
+        List<QuestionResponse> response = objectMapper.readValue(responseBody, collectionType);
+
+        assertThat(response.size()).isEqualTo(2);
     }
 
     @Test
