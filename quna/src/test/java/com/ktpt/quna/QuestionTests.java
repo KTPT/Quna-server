@@ -1,15 +1,12 @@
 package com.ktpt.quna;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.ktpt.quna.application.dto.QuestionRequest;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.domain.model.Question;
+import com.ktpt.quna.domain.model.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +19,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.ktpt.quna.application.dto.QuestionRequest;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import com.ktpt.quna.application.exception.ErrorResponse;
-import com.ktpt.quna.domain.model.Question;
-import com.ktpt.quna.domain.model.QuestionRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class QuestionTests {
@@ -232,6 +232,22 @@ public class QuestionTests {
                 .andExpect(status().isNoContent());
 
         assertThat(repository.findById(fixture.getId())).isNotPresent();
+    }
+
+    @Test
+    void delete_WhenNotExist_ThenThrowException() throws Exception {
+        Long notExistId = -1L;
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + notExistId))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
+
+        assertThat(response.getMessage()).contains("No class");
     }
 
     private Question createFixture(String title, String contents, Long responderId) {
