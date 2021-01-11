@@ -1,9 +1,13 @@
 package com.ktpt.quna.application.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.ktpt.quna.domain.model.Question;
 
 public class QuestionRequest {
+    @NotEmpty
     private final String title;
+    @NotEmpty
     private final String contents;
     private final Long responderId;
 

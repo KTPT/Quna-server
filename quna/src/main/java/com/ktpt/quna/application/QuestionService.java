@@ -51,7 +51,6 @@ public class QuestionService {
 
     @Transactional
     public void delete(Long id) {
-        // TODO: 2021/01/08 해당되는 id가 없을 경우에 발생하는 EmptyResultDataAccessException에 대해 추후 advice로 처리한다.
         questionRepository.deleteById(id);
     }
 }
