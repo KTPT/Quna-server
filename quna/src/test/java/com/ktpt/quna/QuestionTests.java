@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.application.exception.ErrorResponse;
 import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,6 +71,28 @@ public class QuestionTests {
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    void create_WhenEmptyTitleAndContents_ThenThrowException() throws Exception {
+        String emptyTitle = "";
+        String emptyContents = "";
+        String body = objectMapper.writeValueAsString(new QuestionRequest(emptyTitle, emptyContents, null));
+
+        MvcResult result = mockMvc.perform(post("/questions")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(body))
+            .andExpect(status().isBadRequest())
+            .andDo(print())
+            .andReturn();
+
+        String responseBody = result.getResponse()
+            .getContentAsString();
+
+        ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
+
+        assertThat(response.getMessage()).contains("2 errors");
     }
 
     @Test

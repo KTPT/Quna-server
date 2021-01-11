@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 @RequestMapping("/questions")
 @RestController
 public class QuestionController {
@@ -20,7 +22,7 @@ public class QuestionController {
     }
 
     @PostMapping
-    public ResponseEntity<QuestionResponse> create(@RequestBody QuestionRequest request) {
+    public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.create(request);
         return ResponseEntity.created(URI.create("/questions/" + response.getId()))
                 .body(response);
