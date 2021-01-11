@@ -1,5 +1,27 @@
 package com.ktpt.quna;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
+import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.ktpt.quna.application.dto.QuestionRequest;
@@ -7,42 +29,27 @@ import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
 import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class QuestionTests {
-    @Autowired
-    private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private QuestionRepository repository;
 
+    @Autowired
+    private WebApplicationContext applicationContext;
+
+    private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
         repository.deleteAll();
+        mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .alwaysDo(print())
+                .build();
     }
 
     @Test
@@ -57,7 +64,6 @@ public class QuestionTests {
                 .content(body))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(LOCATION, "/questions/1"))
-                .andDo(print())
                 .andReturn();
 
         String responseBody = result.getResponse()
@@ -74,21 +80,20 @@ public class QuestionTests {
     }
 
     @Test
-    void create_WhenEmptyTitleAndContents_ThenThrowException() throws Exception {
+    void request_WhenEmptyTitleAndContents_ThenThrowException() throws Exception {
         String emptyTitle = "";
         String emptyContents = "";
         String body = objectMapper.writeValueAsString(new QuestionRequest(emptyTitle, emptyContents, null));
 
         MvcResult result = mockMvc.perform(post("/questions")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .content(body))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isBadRequest())
+                .andReturn();
 
         String responseBody = result.getResponse()
-            .getContentAsString();
+                .getContentAsString();
 
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
@@ -97,7 +102,8 @@ public class QuestionTests {
 
     @Test
     void update() throws Exception {
-        Question saved = repository.save(new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+        Question saved = repository.save(
+                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
 
         String updatedTitle = "title1";
         String updatedContents = "contents1";
@@ -108,7 +114,6 @@ public class QuestionTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andReturn();
 
         String responseBody = result.getResponse()
@@ -125,15 +130,63 @@ public class QuestionTests {
     }
 
     @Test
+    void update_WhenNotExist_ThenThrowException() throws Exception {
+        String updatedTitle = "title1";
+        String updatedContents = "contents1";
+        String body = objectMapper.writeValueAsString(new QuestionRequest(updatedTitle, updatedContents, null));
+
+        int notExistId = -1;
+
+        MvcResult result = mockMvc.perform(put("/questions/" + notExistId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
+
+        assertThat(response.getMessage()).isEqualTo("존재하지 않는 Question, id = " + notExistId);
+    }
+
+    @Test
+    void update_WhenSameProperties_ThenThrowException() throws Exception {
+        String sameTitle = "title";
+        String sameContents = "contents";
+        Long sameResponderId = 1L;
+
+        Question saved = createFixture(sameTitle, sameContents, sameResponderId);
+
+        String body = objectMapper.writeValueAsString(new QuestionRequest(sameTitle, sameContents, sameResponderId));
+
+        MvcResult result = mockMvc.perform(put("/questions/" + saved.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+
+        ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
+
+        assertThat(response.getMessage()).isEqualTo("동일한 내용으로 수정할 수 없습니다.");
+    }
+
+    @Test
     void findById() throws Exception {
         String title = "title";
         String contents = "contents";
-        Question saved = repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+        Question saved = repository.save(
+                new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
 
         MvcResult result = mockMvc.perform(get("/questions/{id}", saved.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andReturn();
 
         String responseBody = result.getResponse()
@@ -159,7 +212,6 @@ public class QuestionTests {
         MvcResult result = mockMvc.perform(get("/questions")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andReturn();
 
         String responseBody = result.getResponse()
@@ -177,8 +229,7 @@ public class QuestionTests {
         Question fixture = createFixture("test", "test", null);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId()))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
 
         assertThat(repository.findById(fixture.getId())).isNotPresent();
     }

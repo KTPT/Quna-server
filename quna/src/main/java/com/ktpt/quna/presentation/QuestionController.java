@@ -1,15 +1,23 @@
 package com.ktpt.quna.presentation;
 
-import com.ktpt.quna.application.QuestionService;
-import com.ktpt.quna.application.dto.QuestionRequest;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ktpt.quna.application.QuestionService;
+import com.ktpt.quna.application.dto.QuestionRequest;
+import com.ktpt.quna.application.dto.QuestionResponse;
 
 @RequestMapping("/questions")
 @RestController
@@ -29,7 +37,7 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody QuestionRequest request) {
+    public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.update(id, request);
         return ResponseEntity.ok(response);
     }

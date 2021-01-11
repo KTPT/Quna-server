@@ -9,6 +9,8 @@ import javax.persistence.Id;
 
 @Entity
 public class Question {
+    private static final String UPDATE_FAIL_MESSAGE = "동일한 내용으로 수정할 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,11 +40,25 @@ public class Question {
     }
 
     public Question update(String title, String contents, Long responderId) {
+        verify(title, contents, responderId);
         this.title = title;
         this.contents = contents;
         this.responderId = responderId;
         this.lastModifiedAt = LocalDateTime.now();
         return this;
+    }
+
+    private void verify(String title, String contents, Long responderId) {
+        if (this.responderId == null && responderId == null && isEqual(title, contents)) {
+            throw new IllegalArgumentException(UPDATE_FAIL_MESSAGE);
+        }
+        if (isEqual(title, contents) && this.responderId.equals(responderId)) {
+            throw new IllegalArgumentException(UPDATE_FAIL_MESSAGE);
+        }
+    }
+
+    private boolean isEqual(String title, String contents) {
+        return this.title.equals(title) && this.contents.equals(contents);
     }
 
     public Long getId() {
