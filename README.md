@@ -116,11 +116,11 @@ no body
 
 
 ## Answer 기능 목록
-- [ ] 답변 생성
+- [x] 답변 생성
     - [ ] contents가 존재해야 한다.
     - [ ] 답변을 달 해당 questionId가 존재해야 한다.
 
-- [ ] 답변 전체 조회
+- [x] 답변 전체 조회
 
 - [ ] 답변 수정
     - [ ] 요청의 id와 일치하는 답변이 존재해야한다.
@@ -156,7 +156,9 @@ LOCATION : **/questions/{id}/answers/{id}**
 
 **GET /questions/{questionId}/answers**
 
-Request-Body
+200 OK
+
+body
 
 ```json
 [{
