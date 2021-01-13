@@ -19,9 +19,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesRegex;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,19 +60,18 @@ public class AnswerTests {
         String requestBody = objectMapper.writeValueAsString(new AnswerRequest(contents));
 
         Long questionId = 1L;
-        Long answerId = 1L;
         MvcResult result = mockMvc.perform(post("/questions/" + questionId + "/answers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(header().string(LOCATION, "/questions/" + questionId + "/answers/" + answerId))
+                .andExpect(header().string(LOCATION, matchesRegex("/questions/\\d/answers/\\d")))
                 .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         AnswerResponse response = objectMapper.readValue(responseBody, AnswerResponse.class);
 
-        assertThat(response.getId()).isEqualTo(answerId);
+        assertThat(response.getId()).isNotNull();
         assertThat(response.getQuestionId()).isEqualTo(questionId);
         assertThat(response.getContents()).isEqualTo(contents);
         assertThat(response.getCreatedAt()).isNotNull();
@@ -80,14 +81,18 @@ public class AnswerTests {
 
     @Test
     public void findAll() throws Exception {
-        Long[] questionId = {1L, 2L};
-        String[] contents = {"contents1", "contents2", "contents3", "contents4"};
-        repository.save(new Answer(null, questionId[0], contents[0], LocalDateTime.now(), LocalDateTime.now()));
-        repository.save(new Answer(null, questionId[0], contents[1], LocalDateTime.now(), LocalDateTime.now()));
-        repository.save(new Answer(null, questionId[1], contents[2], LocalDateTime.now(), LocalDateTime.now()));
-        repository.save(new Answer(null, questionId[1], contents[3], LocalDateTime.now(), LocalDateTime.now()));
+        List<Long> questionIds = Arrays.asList(1L, 2L);
+        List<String> contents = Arrays.asList("contents1", "contents2", "contents3", "contents4");
+        repository.save(new Answer(null, questionIds.get(0), contents.get(0), LocalDateTime.now(),
+                LocalDateTime.now()));
+        repository.save(new Answer(null, questionIds.get(0), contents.get(1), LocalDateTime.now(),
+                LocalDateTime.now()));
+        repository.save(new Answer(null, questionIds.get(1), contents.get(2), LocalDateTime.now(),
+                LocalDateTime.now()));
+        repository.save(new Answer(null, questionIds.get(1), contents.get(3), LocalDateTime.now(),
+                LocalDateTime.now()));
 
-        MvcResult result = mockMvc.perform(get("/questions/" + questionId[1] + "/answers")
+        MvcResult result = mockMvc.perform(get("/questions/" + questionIds.get(1) + "/answers")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -97,6 +102,7 @@ public class AnswerTests {
         List<QuestionResponse> responses = objectMapper.readValue(responseBody, collectionType);
 
         assertThat(responses.size()).isEqualTo(2);
+        assertThat(responses.get(0).getContents()).isEqualTo(contents.get(2));
+        assertThat(responses.get(1).getContents()).isEqualTo(contents.get(3));
     }
-
 }

@@ -34,7 +34,9 @@ public class AnswerResponse {
     }
 
     public static List<AnswerResponse> listOf(List<Answer> answers) {
-        return answers.stream().map(AnswerResponse::from).collect(Collectors.toList());
+        return answers.stream()
+                .map(AnswerResponse::from)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

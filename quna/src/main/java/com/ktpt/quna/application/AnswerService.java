@@ -27,6 +27,7 @@ public class AnswerService {
         return AnswerResponse.from(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<AnswerResponse> findAll(Long questionId) {
         List<Answer> answers = repository.findAllByQuestionId(questionId);
         return AnswerResponse.listOf(answers);
