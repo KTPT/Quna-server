@@ -1,7 +1,5 @@
 package com.ktpt.quna.domain.model;
 
-import com.ktpt.quna.application.dto.AnswerRequest;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,8 +33,8 @@ public class Answer {
         lastModifiedAt = LocalDateTime.now();
     }
 
-    public void update(AnswerRequest request) {
-        contents = request.getContents();
+    public void update(String contents) {
+        this.contents = contents;
         lastModifiedAt = LocalDateTime.now();
     }
 
