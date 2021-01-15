@@ -32,4 +32,17 @@ public class AnswerController {
         List<AnswerResponse> responses = answerService.findAll(questionId);
         return ResponseEntity.ok(responses);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AnswerResponse> update(@PathVariable Long questionId, @PathVariable Long id,
+                                                 @RequestBody AnswerRequest request) {
+        AnswerResponse response = answerService.update(questionId, id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AnswerResponse> delete(@PathVariable Long questionId, @PathVariable Long id) {
+        answerService.delete(questionId, id);
+        return ResponseEntity.noContent().build();
+    }
 }

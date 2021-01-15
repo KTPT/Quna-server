@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -25,8 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,5 +104,39 @@ public class AnswerTests {
         assertThat(responses.size()).isEqualTo(2);
         assertThat(responses.get(0).getContents()).isEqualTo(contents.get(2));
         assertThat(responses.get(1).getContents()).isEqualTo(contents.get(3));
+    }
+
+    @Test
+    public void update() throws Exception {
+        Answer saved = repository.save(new Answer(null, 1L, "contents", LocalDateTime.now(), LocalDateTime.now()));
+        String updatedContents = "updatedContents";
+        String requestBody = objectMapper.writeValueAsString(new AnswerRequest(updatedContents));
+
+        MvcResult result = mockMvc.perform(put("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseBody = result.getResponse()
+                .getContentAsString();
+        AnswerResponse response = objectMapper.readValue(responseBody, AnswerResponse.class);
+
+        assertThat(response.getId()).isEqualTo(saved.getId());
+        assertThat(response.getQuestionId()).isEqualTo(saved.getQuestionId());
+        assertThat(response.getContents()).isEqualTo(updatedContents);
+        assertThat(response.getCreatedAt()).isNotNull();
+        assertThat(response.getLastModifiedAt()).isNotEqualTo(saved.getLastModifiedAt().toString());
+    }
+
+    @Test
+    public void delete() throws Exception {
+        Answer saved = repository.save(new Answer(null, 1L, "contents", null, null));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId()))
+                .andExpect(status().isNoContent());
+
+        assertThat(repository.findById(saved.getId())).isNotPresent();
     }
 }

@@ -121,13 +121,16 @@ no body
     - [ ] 답변을 달 해당 questionId가 존재해야 한다.
 
 - [x] 답변 전체 조회
+  - [ ] questionId가 존재해야 한다.
 
-- [ ] 답변 수정
-    - [ ] 요청의 id와 일치하는 답변이 존재해야한다.
-    - [ ] contents는 기존 값과 같을 수 없다.
+- [x] 답변 수정
+  - [ ] questionId가 존재해야 한다.
+  - [ ] 요청의 id와 일치하는 답변이 존재해야한다.
+  - [ ] contents는 기존 값과 같을 수 없다.
 
-- [ ] 답변 삭제
-    - [ ] 요청의 id와 일치하는 답변이 존재해야한다.
+- [x] 답변 삭제
+  - [ ] questionId가 존재해야 한다.
+  - [ ] 요청의 id와 일치하는 답변이 존재해야한다.
 
 **POST /questions/{id}/answers**
 Authorization : 토큰
@@ -176,6 +179,12 @@ body
 Authorization : 토큰
 
 Request-Body
+
+```json
+{
+  "contents": string
+}
+```
 
 200 OK
 

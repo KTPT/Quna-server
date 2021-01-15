@@ -2,6 +2,7 @@ package com.ktpt.quna.application;
 
 import com.ktpt.quna.application.dto.AnswerRequest;
 import com.ktpt.quna.application.dto.AnswerResponse;
+import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.Answer;
 import com.ktpt.quna.domain.model.AnswerRepository;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,19 @@ public class AnswerService {
     public List<AnswerResponse> findAll(Long questionId) {
         List<Answer> answers = repository.findAllByQuestionId(questionId);
         return AnswerResponse.listOf(answers);
+    }
+
+    @Transactional
+    public AnswerResponse update(Long questionId, Long id, AnswerRequest request) {
+        Answer answer = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 Answer, id = " + id));
+        answer.update(request);
+
+        return AnswerResponse.from(answer);
+    }
+
+    @Transactional
+    public void delete(Long questionId, Long id) {
+        repository.deleteById(id);
     }
 }
