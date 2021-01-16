@@ -33,6 +33,11 @@ public class Answer {
         lastModifiedAt = LocalDateTime.now();
     }
 
+    public void update(String contents) {
+        this.contents = contents;
+        lastModifiedAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
