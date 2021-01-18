@@ -1,9 +1,6 @@
 package com.ktpt.quna.domain.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,26 +8,39 @@ public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "answer_id")
     private Long id;
     private Long questionId;
     private String contents;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member author;
+
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 
     protected Answer() {
     }
 
-    public Answer(Long id, Long questionId, String contents, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+    public Answer(Long id, Long questionId, String contents, Member author, LocalDateTime createdAt,
+                  LocalDateTime lastModifiedAt) {
         this.id = id;
         this.questionId = questionId;
         this.contents = contents;
+        this.author = author;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
     }
 
     public void create() {
+//        setAuthor(author);
         createdAt = LocalDateTime.now();
         lastModifiedAt = LocalDateTime.now();
+    }
+
+    public Member getAuthor() {
+        return author;
     }
 
     public void update(String contents) {
@@ -48,6 +58,11 @@ public class Answer {
 
     public String getContents() {
         return contents;
+    }
+
+    public void setAuthor(Member author) {
+        this.author = author;
+        author.getAnswers().add(this);
     }
 
     public LocalDateTime getCreatedAt() {

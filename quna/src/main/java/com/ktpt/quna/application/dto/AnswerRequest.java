@@ -18,6 +18,6 @@ public class AnswerRequest {
     }
 
     public Answer toEntity(Long questionId) {
-        return new Answer(null, questionId, contents, null, null);
+        return new Answer(null, questionId, contents, null, null, null);
     }
 }
