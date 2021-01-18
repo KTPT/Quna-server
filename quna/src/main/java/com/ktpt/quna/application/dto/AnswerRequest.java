@@ -1,8 +1,11 @@
 package com.ktpt.quna.application.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import com.ktpt.quna.domain.model.Answer;
 
 public class AnswerRequest {
+    @NotBlank
     private final String contents;
 
     private AnswerRequest() {
