@@ -20,44 +20,44 @@ import com.ktpt.quna.infra.token.TokenExtractor;
 
 @Component
 public class LoginRequiredInterceptor implements HandlerInterceptor {
-	private final JwtTokenProvider jwtTokenProvider;
-	private final TokenExtractor tokenExtractor;
-	private final MemberRepository repository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenExtractor tokenExtractor;
+    private final MemberRepository repository;
 
-	public LoginRequiredInterceptor(JwtTokenProvider jwtTokenProvider, TokenExtractor tokenExtractor,
-		MemberRepository repository) {
-		this.jwtTokenProvider = jwtTokenProvider;
-		this.tokenExtractor = tokenExtractor;
-		this.repository = repository;
-	}
+    public LoginRequiredInterceptor(JwtTokenProvider jwtTokenProvider, TokenExtractor tokenExtractor,
+            MemberRepository repository) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.tokenExtractor = tokenExtractor;
+        this.repository = repository;
+    }
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-		LoginRequired annotation = getMethodAnnotation((HandlerMethod)handler, LoginRequired.class);
-		if (Objects.isNull(annotation)) {
-			return true;
-		}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        LoginRequired annotation = getMethodAnnotation((HandlerMethod)handler, LoginRequired.class);
+        if (Objects.isNull(annotation)) {
+            return true;
+        }
 
-		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if (authorization == null) {
-			throw new InvalidTokenException("유효한 토큰을 요청과 함께 보내야합니다.");
-		}
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorization == null) {
+            throw new InvalidTokenException("유효한 토큰을 요청과 함께 보내야합니다.");
+        }
 
-		String token = tokenExtractor.extract(request, HttpHeaders.AUTHORIZATION, "bearer");
-		if (token.isEmpty()) {
-			return true;
-		}
+        String token = tokenExtractor.extract(request, HttpHeaders.AUTHORIZATION, "bearer");
+        if (token.isEmpty()) {
+            return true;
+        }
 
-		Long memberId = jwtTokenProvider.getMemberId(token);
-		if (!repository.existsById(memberId)) {
-			throw new InvalidTokenException("유효하지 않은 토큰입니다.");
-		}
+        Long memberId = jwtTokenProvider.getMemberId(token);
+        if (!repository.existsById(memberId)) {
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private <A extends Annotation> A getMethodAnnotation(HandlerMethod handlerMethod, Class<A> annotationType) {
-		return Optional.ofNullable(handlerMethod.getMethod().getAnnotation(annotationType))
-			.orElse(handlerMethod.getBeanType().getAnnotation(annotationType));
-	}
+    private <A extends Annotation> A getMethodAnnotation(HandlerMethod handlerMethod, Class<A> annotationType) {
+        return Optional.ofNullable(handlerMethod.getMethod().getAnnotation(annotationType))
+                .orElse(handlerMethod.getBeanType().getAnnotation(annotationType));
+    }
 }

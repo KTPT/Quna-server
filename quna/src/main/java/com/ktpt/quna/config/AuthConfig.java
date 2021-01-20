@@ -13,26 +13,26 @@ import com.ktpt.quna.infra.LoginRequiredInterceptor;
 
 @Configuration
 public class AuthConfig implements WebMvcConfigurer {
-	private final LoginRequiredInterceptor loginRequiredInterceptor;
-	private final LoginMemberIdInterceptor loginMemberIdInterceptor;
-	private final LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver;
+    private final LoginRequiredInterceptor loginRequiredInterceptor;
+    private final LoginMemberIdInterceptor loginMemberIdInterceptor;
+    private final LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver;
 
-	public AuthConfig(LoginRequiredInterceptor loginRequiredInterceptor,
-		LoginMemberIdInterceptor loginMemberIdInterceptor,
-		LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver) {
-		this.loginRequiredInterceptor = loginRequiredInterceptor;
-		this.loginMemberIdInterceptor = loginMemberIdInterceptor;
-		this.loginMemberMethodArgumentResolver = loginMemberMethodArgumentResolver;
-	}
+    public AuthConfig(LoginRequiredInterceptor loginRequiredInterceptor,
+            LoginMemberIdInterceptor loginMemberIdInterceptor,
+            LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver) {
+        this.loginRequiredInterceptor = loginRequiredInterceptor;
+        this.loginMemberIdInterceptor = loginMemberIdInterceptor;
+        this.loginMemberMethodArgumentResolver = loginMemberMethodArgumentResolver;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(loginRequiredInterceptor).order(0);
-		registry.addInterceptor(loginMemberIdInterceptor).order(1);
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginRequiredInterceptor).order(0);
+        registry.addInterceptor(loginMemberIdInterceptor).order(1);
+    }
 
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(loginMemberMethodArgumentResolver);
-	}
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(loginMemberMethodArgumentResolver);
+    }
 }

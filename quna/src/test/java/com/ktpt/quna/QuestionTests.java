@@ -1,14 +1,5 @@
 package com.ktpt.quna;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.ktpt.quna.application.dto.QuestionRequest;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import com.ktpt.quna.application.exception.ErrorResponse;
-import com.ktpt.quna.domain.model.Member;
-import com.ktpt.quna.domain.model.Question;
-import com.ktpt.quna.domain.model.QuestionRepository;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
@@ -37,6 +28,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 

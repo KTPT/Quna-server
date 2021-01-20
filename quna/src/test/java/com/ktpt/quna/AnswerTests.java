@@ -166,7 +166,7 @@ public class AnswerTests extends AuthTestStep {
                         .header(AUTHORIZATION, token))
                 .andExpect(status().isNoContent());
 
-        assertThat(questionRepository.findById(saved.getId())).isNotPresent();
+        assertThat(answerRepository.findById(saved.getId())).isNotPresent();
     }
 
     @Test

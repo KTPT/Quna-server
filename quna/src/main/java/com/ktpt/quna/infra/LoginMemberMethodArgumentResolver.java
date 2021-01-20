@@ -13,15 +13,15 @@ import com.ktpt.quna.infra.annotation.LoginMemberId;
 
 @Component
 public class LoginMemberMethodArgumentResolver implements HandlerMethodArgumentResolver {
-	@Override
-	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.hasParameterAnnotation(LoginMemberId.class);
-	}
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
+    }
 
-	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-		HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
-		return request.getAttribute("memberId");
-	}
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
+        return request.getAttribute("memberId");
+    }
 }
