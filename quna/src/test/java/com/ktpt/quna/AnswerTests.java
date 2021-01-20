@@ -182,6 +182,7 @@ public class AnswerTests extends AuthTestStep {
         String body = objectMapper.writeValueAsString(new AnswerRequest("contents"));
 
         MvcResult result = mockMvc.perform(post("/questions/-1/answers")
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
