@@ -28,7 +28,7 @@ public class AuthTestStep {
 
     public String createToken(Long memberId) {
         String jwt = jwtTokenProvider.createToken(memberId);
-        return "bearer " + jwt;
+        return " " + jwt;
     }
 
     public void clearMember() {

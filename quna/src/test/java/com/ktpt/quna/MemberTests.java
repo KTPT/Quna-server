@@ -21,11 +21,14 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktpt.quna.application.dto.LoginRequest;
 import com.ktpt.quna.application.dto.MemberCreateRequest;
 import com.ktpt.quna.application.dto.MemberResponse;
+import com.ktpt.quna.application.dto.TokenResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
 import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.MemberRepository;
+import com.ktpt.quna.infra.token.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MemberTests {
@@ -42,6 +45,9 @@ public class MemberTests {
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void setUp() {
@@ -97,5 +103,72 @@ public class MemberTests {
                 ErrorResponse.class);
 
         assertThat(response.getMessage()).isEqualTo("중복된 닉네임입니다.");
+    }
+
+    @Test
+    void login() throws Exception {
+        String nickname = "nickname";
+        String password = "password";
+        Member saved = memberRepository.save(
+                new Member(null, nickname, encoder.encode(password), "avatarUrl", null).create());
+
+        LoginRequest request = new LoginRequest(nickname, password);
+
+        MvcResult mvcResult = mockMvc.perform(get("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TokenResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                TokenResponse.class);
+
+        Long memberId = jwtTokenProvider.getMemberId(response.getToken());
+
+        assertThat(memberId).isEqualTo(saved.getId());
+        assertThat(response.getType()).isEqualTo("bearer");
+    }
+
+    @Test
+    void login_WhenNotExist_ThenThrowException() throws Exception {
+        String nickname = "nickname";
+        String password = "password";
+        memberRepository.save(new Member(null, nickname, encoder.encode(password), "avatarUrl", null).create());
+
+        LoginRequest request = new LoginRequest(nickname + "notExist", password);
+
+        MvcResult mvcResult = mockMvc.perform(get("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                ErrorResponse.class);
+
+        assertThat(response.getMessage()).isEqualTo("요청과 일치하는 회원이 존재하지 않습니다.");
+    }
+
+    @Test
+    void login_WhenIncorrectPassword_ThenThrowException() throws Exception {
+        String nickname = "nickname";
+        String password = "password";
+        memberRepository.save(new Member(null, nickname, encoder.encode(password), "avatarUrl", null).create());
+
+        LoginRequest request = new LoginRequest(nickname, password + "incorrect");
+
+        MvcResult mvcResult = mockMvc.perform(get("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                ErrorResponse.class);
+
+        assertThat(response.getMessage()).isEqualTo("요청과 일치하는 회원이 존재하지 않습니다.");
     }
 }
