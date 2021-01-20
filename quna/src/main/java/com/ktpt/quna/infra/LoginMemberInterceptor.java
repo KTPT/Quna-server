@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -29,8 +30,12 @@ public class LoginMemberInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+		if (HttpMethod.GET.matches(request.getMethod())) {
+			return true;
+		}
+
 		if (authorization == null) {
-			throw new InvalidTokenException("이것도 바꿔야 한다.");
+			throw new InvalidTokenException("유효한 토큰을 요청과 함께 보내야합니다.");
 		}
 
 		String token = tokenExtractor.extract(request, HttpHeaders.AUTHORIZATION, "bearer");
