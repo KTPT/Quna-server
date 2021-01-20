@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.ktpt.quna.application.exception.InvalidTokenException;
-import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.MemberRepository;
 import com.ktpt.quna.infra.token.JwtTokenProvider;
 import com.ktpt.quna.infra.token.TokenExtractor;
@@ -41,8 +40,11 @@ public class LoginMemberInterceptor implements HandlerInterceptor {
 		}
 
 		Long memberId = jwtTokenProvider.getMemberId(token);
-		Member loginMember = repository.findById(memberId).orElseThrow(() -> new InvalidTokenException("이것도 바꿔야 함"));
-		request.setAttribute("loginMember", loginMember);
+		if (!repository.existsById(memberId)) {
+			throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+		}
+
+		request.setAttribute("memberId", memberId);
 		return true;
 	}
 }
