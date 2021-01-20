@@ -1,5 +1,8 @@
 package com.ktpt.quna.presentation;
 
+import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.application.exception.InvalidTokenException;
+import com.ktpt.quna.application.exception.NotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,12 @@ public class ExceptionController {
 	public ResponseEntity<ErrorResponse> handle(NotFoundException e) {
 		ErrorResponse response = new ErrorResponse(e.getMessage());
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(InvalidTokenException.class)
+	public ResponseEntity<ErrorResponse> handle(InvalidTokenException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler({IllegalArgumentException.class, InvalidRequestException.class})
