@@ -14,18 +14,23 @@ public class Member {
 	private Long id;
 	private String nickname;
 	private String password;
-	private LocalDateTime createdAt;
 	private String avatarUrl;
+	private LocalDateTime createdAt;
 
 	protected Member() {
 	}
 
-	public Member(Long id, String nickname, String password, LocalDateTime createdAt, String avatarUrl) {
+	public Member(Long id, String nickname, String password, String avatarUrl, LocalDateTime createdAt) {
 		this.id = id;
 		this.nickname = nickname;
 		this.password = password;
-		this.createdAt = createdAt;
 		this.avatarUrl = avatarUrl;
+		this.createdAt = createdAt;
+	}
+
+	public Member create() {
+		createdAt = LocalDateTime.now();
+		return this;
 	}
 
 	public Long getId() {
@@ -40,11 +45,11 @@ public class Member {
 		return password;
 	}
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
 	public String getAvatarUrl() {
 		return avatarUrl;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 }

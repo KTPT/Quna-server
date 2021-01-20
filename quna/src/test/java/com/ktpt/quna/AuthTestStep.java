@@ -11,27 +11,27 @@ import com.ktpt.quna.infra.token.JwtTokenProvider;
 
 @Component
 public class AuthTestStep {
-	@Autowired
-	private MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
-	@Autowired
-	private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-	public Member createDefaultMember() {
-		return memberRepository.save(new Member(1L, "승완", "123", LocalDateTime.now(), "haha"));
-	}
+    public Member createDefaultMember() {
+        return memberRepository.save(new Member(1L, "승완", "123", "haha", LocalDateTime.now()));
+    }
 
-	public Member createMember(Long memberId, String nickname, String password, LocalDateTime createdAt,
-		String avatarUrl) {
-		return memberRepository.save(new Member(memberId, nickname, password, createdAt, avatarUrl));
-	}
+    public Member createMember(Long memberId, String nickname, String password, LocalDateTime createdAt,
+            String avatarUrl) {
+        return memberRepository.save(new Member(memberId, nickname, password, avatarUrl, createdAt));
+    }
 
-	public String createToken(Long memberId) {
-		String jwt = jwtTokenProvider.createToken(memberId);
-		return "bearer " + jwt;
-	}
+    public String createToken(Long memberId) {
+        String jwt = jwtTokenProvider.createToken(memberId);
+        return "bearer " + jwt;
+    }
 
-	public void clearMember() {
-		memberRepository.deleteAll();
-	}
+    public void clearMember() {
+        memberRepository.deleteAll();
+    }
 }

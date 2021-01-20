@@ -1,14 +1,5 @@
 package com.ktpt.quna;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.ktpt.quna.application.dto.AnswerRequest;
-import com.ktpt.quna.application.dto.AnswerResponse;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import com.ktpt.quna.domain.model.Answer;
-import com.ktpt.quna.domain.model.AnswerRepository;
-import com.ktpt.quna.domain.model.Member;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.http.HttpHeaders.*;
@@ -40,6 +31,7 @@ import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
 import com.ktpt.quna.domain.model.Answer;
 import com.ktpt.quna.domain.model.AnswerRepository;
+import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
@@ -171,7 +163,7 @@ public class AnswerTests extends AuthTestStep {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId())
-                .header(AUTHORIZATION, token))
+                        .header(AUTHORIZATION, token))
                 .andExpect(status().isNoContent());
 
         assertThat(questionRepository.findById(saved.getId())).isNotPresent();
@@ -250,7 +242,7 @@ public class AnswerTests extends AuthTestStep {
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/questions/{questionId}/answers/{answerId}",
                         question.getId(), notExistId)
-                .header(AUTHORIZATION, token))
+                        .header(AUTHORIZATION, token))
                 .andExpect(status().isNotFound())
                 .andReturn();
 
