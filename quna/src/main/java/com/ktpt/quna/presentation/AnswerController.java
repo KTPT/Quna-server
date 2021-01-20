@@ -48,6 +48,10 @@ public class AnswerController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     @param questionId used for verification
+     @see com.ktpt.quna.presentation.verifier.RequestAspect
+     */
     @LoginRequired
     @PutMapping("/{id}")
     public ResponseEntity<AnswerResponse> update(@PathVariable Long questionId, @PathVariable Long id,
@@ -56,6 +60,10 @@ public class AnswerController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     @param questionId used for verification
+     @see com.ktpt.quna.presentation.verifier.RequestAspect
+     */
     @LoginRequired
     @DeleteMapping("/{id}")
     public ResponseEntity<AnswerResponse> delete(@PathVariable Long questionId, @PathVariable Long id) {
