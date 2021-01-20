@@ -83,14 +83,10 @@ public class AnswerTests {
     public void findAll() throws Exception {
         List<Long> questionIds = Arrays.asList(1L, 2L);
         List<String> contents = Arrays.asList("contents1", "contents2", "contents3", "contents4");
-        repository.save(new Answer(null, questionIds.get(0), contents.get(0), LocalDateTime.now(),
-                LocalDateTime.now()));
-        repository.save(new Answer(null, questionIds.get(0), contents.get(1), LocalDateTime.now(),
-                LocalDateTime.now()));
-        repository.save(new Answer(null, questionIds.get(1), contents.get(2), LocalDateTime.now(),
-                LocalDateTime.now()));
-        repository.save(new Answer(null, questionIds.get(1), contents.get(3), LocalDateTime.now(),
-                LocalDateTime.now()));
+        createFixture(questionIds.get(0), contents.get(0));
+        createFixture(questionIds.get(0), contents.get(1));
+        createFixture(questionIds.get(1), contents.get(2));
+        createFixture(questionIds.get(1), contents.get(3));
 
         MvcResult result = mockMvc.perform(get("/questions/" + questionIds.get(1) + "/answers")
                 .accept(MediaType.APPLICATION_JSON))
@@ -108,7 +104,9 @@ public class AnswerTests {
 
     @Test
     public void update() throws Exception {
-        Answer saved = repository.save(new Answer(null, 1L, "contents", LocalDateTime.now(), LocalDateTime.now()));
+        String contents = "contents";
+        Answer saved = createFixture(1L, contents);
+
         String updatedContents = "updatedContents";
         String requestBody = objectMapper.writeValueAsString(new AnswerRequest(updatedContents));
 
@@ -132,11 +130,18 @@ public class AnswerTests {
 
     @Test
     public void delete() throws Exception {
-        Answer saved = repository.save(new Answer(null, 1L, "contents", null, null));
+        String contents = "contents";
+        Answer saved = createFixture(1L, contents);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId()))
                 .andExpect(status().isNoContent());
 
         assertThat(repository.findById(saved.getId())).isNotPresent();
     }
+
+    private Answer createFixture(Long questionId, String contents) {
+        return repository.save(new Answer(null, questionId, contents, null, LocalDateTime.now(),
+                LocalDateTime.now()));
+    }
+
 }

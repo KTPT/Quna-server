@@ -102,8 +102,9 @@ public class QuestionTests {
 
     @Test
     void update() throws Exception {
-        Question saved = repository.save(
-                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+        String title = "title";
+        String contents = "contents";
+        Question saved = createFixture(title, contents, null);
 
         String updatedTitle = "title1";
         String updatedContents = "contents1";
@@ -181,8 +182,7 @@ public class QuestionTests {
     void findById() throws Exception {
         String title = "title";
         String contents = "contents";
-        Question saved = repository.save(
-                new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+        Question saved = createFixture(title, contents, null);
 
         MvcResult result = mockMvc.perform(get("/questions/{id}", saved.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -206,8 +206,8 @@ public class QuestionTests {
     void findAll() throws Exception {
         String title = "title";
         String contents = "contents";
-        repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
-        repository.save(new Question(null, title, contents, null, LocalDateTime.now(), LocalDateTime.now()));
+        createFixture(title, contents, null);
+        createFixture(title, contents, null);
 
         MvcResult result = mockMvc.perform(get("/questions")
                 .accept(MediaType.APPLICATION_JSON))
@@ -251,6 +251,7 @@ public class QuestionTests {
     }
 
     private Question createFixture(String title, String contents, Long responderId) {
-        return repository.save(new Question(null, title, contents, responderId, null, null));
+        return repository.save(new Question(null, title, contents, null, responderId, LocalDateTime.now(),
+                LocalDateTime.now()));
     }
 }
