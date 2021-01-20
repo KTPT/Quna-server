@@ -1,5 +1,14 @@
 package com.ktpt.quna;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.ktpt.quna.application.dto.QuestionRequest;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.domain.model.Member;
+import com.ktpt.quna.domain.model.Question;
+import com.ktpt.quna.domain.model.QuestionRepository;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
@@ -32,7 +41,10 @@ import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class QuestionTests {
+public class QuestionTests extends AuthTestStep {
+    private static final String AUTHORIZATION = "Authorization";
+    private String token;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -47,6 +59,11 @@ public class QuestionTests {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
+
+        clearMember();
+        Member member = createDefaultMember();
+        token = createToken(member.getId());
+
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .alwaysDo(print())
@@ -60,6 +77,7 @@ public class QuestionTests {
         String body = objectMapper.writeValueAsString(new QuestionRequest(title, contents, null));
 
         MvcResult result = mockMvc.perform(post("/questions")
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -87,6 +105,7 @@ public class QuestionTests {
         String body = objectMapper.writeValueAsString(new QuestionRequest(emptyTitle, emptyContents, null));
 
         MvcResult result = mockMvc.perform(post("/questions")
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -111,6 +130,7 @@ public class QuestionTests {
         String body = objectMapper.writeValueAsString(new QuestionRequest(updatedTitle, updatedContents, null));
 
         MvcResult result = mockMvc.perform(put("/questions/" + saved.getId())
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -139,6 +159,7 @@ public class QuestionTests {
         int notExistId = -1;
 
         MvcResult result = mockMvc.perform(put("/questions/" + notExistId)
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -164,6 +185,7 @@ public class QuestionTests {
         String body = objectMapper.writeValueAsString(new QuestionRequest(sameTitle, sameContents, sameResponderId));
 
         MvcResult result = mockMvc.perform(put("/questions/" + saved.getId())
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -229,7 +251,8 @@ public class QuestionTests {
     void delete() throws Exception {
         Question fixture = createFixture("test", "test", null);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + fixture.getId())
+                .header(AUTHORIZATION, token))
                 .andExpect(status().isNoContent());
 
         assertThat(repository.findById(fixture.getId())).isNotPresent();
@@ -239,7 +262,8 @@ public class QuestionTests {
     void delete_WhenNotExist_ThenThrowException() throws Exception {
         long notExistId = -1L;
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + notExistId))
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/questions/" + notExistId)
+                .header(AUTHORIZATION, token))
                 .andExpect(status().isNotFound())
                 .andReturn();
 

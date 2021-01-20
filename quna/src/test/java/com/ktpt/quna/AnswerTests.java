@@ -1,5 +1,14 @@
 package com.ktpt.quna;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.ktpt.quna.application.dto.AnswerRequest;
+import com.ktpt.quna.application.dto.AnswerResponse;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.domain.model.Answer;
+import com.ktpt.quna.domain.model.AnswerRepository;
+import com.ktpt.quna.domain.model.Member;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.http.HttpHeaders.*;
@@ -35,7 +44,9 @@ import com.ktpt.quna.domain.model.Question;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AnswerTests {
+public class AnswerTests extends AuthTestStep {
+    private static final String AUTHORIZATION = "Authorization";
+    private String token;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -62,6 +73,11 @@ public class AnswerTests {
                 new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
         question1 = questionRepository.save(
                 new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+
+        clearMember();
+        Member member = createDefaultMember();
+        token = createToken(member.getId());
+
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .alwaysDo(print())
@@ -75,6 +91,7 @@ public class AnswerTests {
 
         Long questionId = question.getId();
         MvcResult result = mockMvc.perform(post("/questions/" + questionId + "/answers")
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestBody))
@@ -130,6 +147,7 @@ public class AnswerTests {
         String requestBody = objectMapper.writeValueAsString(new AnswerRequest(updatedContents));
 
         MvcResult result = mockMvc.perform(put("/questions/" + question.getId() + "/answers/" + saved.getId())
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestBody))
@@ -152,7 +170,8 @@ public class AnswerTests {
         Answer saved = answerRepository.save(new Answer(null, question.getId(), "contents", null, null));
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId()))
+                MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId())
+                .header(AUTHORIZATION, token))
                 .andExpect(status().isNoContent());
 
         assertThat(questionRepository.findById(saved.getId())).isNotPresent();
@@ -187,6 +206,7 @@ public class AnswerTests {
 
         MvcResult result = mockMvc.perform(put("/questions/{questionId}/answers/{answerId}",
                 question.getId(), saved.getId())
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -207,6 +227,7 @@ public class AnswerTests {
         String body = objectMapper.writeValueAsString(new AnswerRequest(emptyContents));
 
         MvcResult result = mockMvc.perform(post("/questions/{questionId}/answers", question.getId())
+                .header(AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -227,7 +248,8 @@ public class AnswerTests {
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/questions/{questionId}/answers/{answerId}",
-                        question.getId(), notExistId))
+                        question.getId(), notExistId)
+                .header(AUTHORIZATION, token))
                 .andExpect(status().isNotFound())
                 .andReturn();
 

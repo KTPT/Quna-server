@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ktpt.quna.application.AnswerService;
 import com.ktpt.quna.application.dto.AnswerRequest;
 import com.ktpt.quna.application.dto.AnswerResponse;
+import com.ktpt.quna.infra.annotation.LoginRequired;
+
 import com.ktpt.quna.presentation.verifier.QuestionShouldExist;
 
 @QuestionShouldExist
@@ -31,6 +33,7 @@ public class AnswerController {
         this.answerService = answerService;
     }
 
+    @LoginRequired
     @PostMapping
     public ResponseEntity<AnswerResponse> create(@PathVariable Long questionId, @RequestBody @Valid AnswerRequest request) {
         AnswerResponse response = answerService.create(request, questionId);
@@ -45,6 +48,7 @@ public class AnswerController {
         return ResponseEntity.ok(responses);
     }
 
+    @LoginRequired
     @PutMapping("/{id}")
     public ResponseEntity<AnswerResponse> update(@PathVariable Long questionId, @PathVariable Long id,
             @RequestBody @Valid AnswerRequest request) {
@@ -52,6 +56,7 @@ public class AnswerController {
         return ResponseEntity.ok(response);
     }
 
+    @LoginRequired
     @DeleteMapping("/{id}")
     public ResponseEntity<AnswerResponse> delete(@PathVariable Long questionId, @PathVariable Long id) {
         answerService.delete(questionId, id);
