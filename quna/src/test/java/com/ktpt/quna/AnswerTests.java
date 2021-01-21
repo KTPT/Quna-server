@@ -1,16 +1,15 @@
 package com.ktpt.quna;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.ktpt.quna.application.dto.AnswerRequest;
+import com.ktpt.quna.application.dto.AnswerResponse;
+import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.domain.model.Answer;
+import com.ktpt.quna.domain.model.AnswerRepository;
+import com.ktpt.quna.domain.model.Question;
+import com.ktpt.quna.domain.model.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +22,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.ktpt.quna.application.dto.AnswerRequest;
-import com.ktpt.quna.application.dto.AnswerResponse;
-import com.ktpt.quna.application.dto.QuestionResponse;
-import com.ktpt.quna.application.exception.ErrorResponse;
-import com.ktpt.quna.domain.model.Answer;
-import com.ktpt.quna.domain.model.AnswerRepository;
-import com.ktpt.quna.domain.model.Question;
-import com.ktpt.quna.domain.model.QuestionRepository;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AnswerTests {
@@ -59,9 +59,9 @@ public class AnswerTests {
         answerRepository.deleteAll();
         questionRepository.deleteAll();
         question = questionRepository.save(
-                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+                new Question(null, "title", "contents", null, null, LocalDateTime.now(), LocalDateTime.now()));
         question1 = questionRepository.save(
-                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+                new Question(null, "title", "contents", null, null, LocalDateTime.now(), LocalDateTime.now()));
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .alwaysDo(print())
@@ -97,14 +97,10 @@ public class AnswerTests {
 
         List<Long> questionIds = Arrays.asList(question.getId(), question1.getId());
         List<String> contents = Arrays.asList("contents1", "contents2", "contents3", "contents4");
-        answerRepository.save(new Answer(null, questionIds.get(0), contents.get(0), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(0), contents.get(1), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(1), contents.get(2), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(1), contents.get(3), LocalDateTime.now(),
-                LocalDateTime.now()));
+        createFixture(questionIds.get(0), contents.get(0));
+        createFixture(questionIds.get(0), contents.get(1));
+        createFixture(questionIds.get(1), contents.get(2));
+        createFixture(questionIds.get(1), contents.get(3));
 
         MvcResult result = mockMvc.perform(get("/questions/" + questionIds.get(1) + "/answers")
                 .accept(MediaType.APPLICATION_JSON))
@@ -123,8 +119,8 @@ public class AnswerTests {
 
     @Test
     public void update() throws Exception {
-        Answer saved = answerRepository.save(
-                new Answer(null, question.getId(), "contents", LocalDateTime.now(), LocalDateTime.now()));
+        String contents = "contents";
+        Answer saved = createFixture(1L, contents);
 
         String updatedContents = "updatedContents";
         String requestBody = objectMapper.writeValueAsString(new AnswerRequest(updatedContents));
@@ -149,13 +145,14 @@ public class AnswerTests {
 
     @Test
     public void delete() throws Exception {
-        Answer saved = answerRepository.save(new Answer(null, question.getId(), "contents", null, null));
+        String contents = "contents";
+        Answer saved = createFixture(question.getId(), contents);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId()))
                 .andExpect(status().isNoContent());
 
-        assertThat(questionRepository.findById(saved.getId())).isNotPresent();
+        assertThat(answerRepository.findById(saved.getId())).isNotPresent();
     }
 
     @Test
@@ -180,8 +177,7 @@ public class AnswerTests {
     @Test
     void update_WhenSameContents_ThenThrowException() throws Exception {
         String contents = "contents";
-        Answer saved = answerRepository.save(
-                new Answer(null, question.getId(), contents, LocalDateTime.now(), LocalDateTime.now()));
+        Answer saved = createFixture(question.getId(), contents);
 
         String body = objectMapper.writeValueAsString(new AnswerRequest(contents));
 
@@ -238,4 +234,10 @@ public class AnswerTests {
 
         assertThat(response.getMessage()).contains("No class");
     }
+
+    private Answer createFixture(Long questionId, String contents) {
+        return answerRepository.save(new Answer(null, questionId, contents, null, LocalDateTime.now(),
+                LocalDateTime.now()));
+    }
+
 }

@@ -1,11 +1,11 @@
 package com.ktpt.quna.domain.model;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class QuestionTest {
 
@@ -19,7 +19,7 @@ class QuestionTest {
         title = "title";
         contents = "contents";
         responderId = 1L;
-        question = new Question(1L, title, contents, responderId, LocalDateTime.now(), LocalDateTime.now());
+        question = new Question(1L, title, contents, null, responderId, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -28,7 +28,7 @@ class QuestionTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("동일한 내용으로 수정할 수 없습니다.");
 
-        Question noResponder = new Question(1L, title, contents, null, LocalDateTime.now(), LocalDateTime.now());
+        Question noResponder = new Question(1L, title, contents, null, null, LocalDateTime.now(), LocalDateTime.now());
         assertThatThrownBy(() -> noResponder.update(title, contents, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("동일한 내용으로 수정할 수 없습니다.");

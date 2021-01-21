@@ -1,8 +1,8 @@
 package com.ktpt.quna.application.dto;
 
-import javax.validation.constraints.NotBlank;
-
 import com.ktpt.quna.domain.model.Question;
+
+import javax.validation.constraints.NotBlank;
 
 public class QuestionRequest {
     @NotBlank
@@ -24,7 +24,7 @@ public class QuestionRequest {
     }
 
     public Question toEntity() {
-        return new Question(null, title, contents, responderId, null, null);
+        return new Question(null, title, contents, null, responderId, null, null);
     }
 
     public String getTitle() {

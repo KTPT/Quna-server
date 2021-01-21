@@ -1,11 +1,11 @@
 package com.ktpt.quna.domain.model;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AnswerTest {
     private Answer answer;
@@ -14,7 +14,7 @@ class AnswerTest {
     @BeforeEach
     void setUp() {
         contents = "contents";
-        answer = new Answer(1L, 1L, contents, LocalDateTime.now(), LocalDateTime.now());
+        answer = new Answer(1L, 1L, contents, null, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
