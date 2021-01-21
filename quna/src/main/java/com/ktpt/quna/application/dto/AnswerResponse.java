@@ -30,13 +30,13 @@ public class AnswerResponse {
 
     public static AnswerResponse from(Answer answer) {
         return new AnswerResponse(answer.getId(), answer.getQuestionId(), answer.getContents(),
-                answer.getCreatedAt().toString(), answer.getLastModifiedAt().toString());
+            answer.getCreatedAt().toString(), answer.getLastModifiedAt().toString());
     }
 
     public static List<AnswerResponse> listOf(List<Answer> answers) {
         return answers.stream()
-                .map(AnswerResponse::from)
-                .collect(Collectors.toList());
+            .map(AnswerResponse::from)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

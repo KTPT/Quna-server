@@ -14,13 +14,13 @@ class AnswerTest {
     @BeforeEach
     void setUp() {
         contents = "contents";
-        answer = new Answer(1L, 1L, contents, LocalDateTime.now(), LocalDateTime.now());
+        answer = new Answer(1L, 1L, contents, null, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
     void update() {
         assertThatThrownBy(() -> answer.update(contents))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("동일한 내용으로 수정할 수 없습니다.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("동일한 내용으로 수정할 수 없습니다.");
     }
 }

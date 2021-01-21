@@ -25,7 +25,7 @@ public class MemberResponse {
 
     public static MemberResponse of(Member member) {
         return new MemberResponse(member.getId(), member.getNickname(), member.getPassword(), member.getCreatedAt(),
-                member.getAvatarUrl());
+            member.getAvatarUrl());
     }
 
     public Long getId() {

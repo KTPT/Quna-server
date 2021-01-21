@@ -15,7 +15,7 @@ public class TokenExtractor {
             if (element.toLowerCase().startsWith(type.toLowerCase())) {
                 String headerElement = element.substring(type.length()).trim();
                 request.setAttribute(TokenExtractor.class.getSimpleName() + ".ACCESS_TOKEN_TYPE",
-                        element.substring(0, type.length()).trim());
+                    element.substring(0, type.length()).trim());
                 int commaIndex = headerElement.indexOf(",");
                 if (commaIndex > 0) {
                     headerElement = headerElement.substring(0, commaIndex);

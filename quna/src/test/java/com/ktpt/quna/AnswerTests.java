@@ -62,18 +62,18 @@ public class AnswerTests extends AuthTestStep {
         answerRepository.deleteAll();
         questionRepository.deleteAll();
         question = questionRepository.save(
-                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+            new Question(null, "title", "contents", null, null, LocalDateTime.now(), LocalDateTime.now()));
         question1 = questionRepository.save(
-                new Question(null, "title", "contents", null, LocalDateTime.now(), LocalDateTime.now()));
+            new Question(null, "title", "contents", null, null, LocalDateTime.now(), LocalDateTime.now()));
 
         clearMember();
         Member member = createDefaultMember();
         token = createToken(member.getId());
 
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysDo(print())
-                .build();
+            .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .alwaysDo(print())
+            .build();
     }
 
     @Test
@@ -83,13 +83,13 @@ public class AnswerTests extends AuthTestStep {
 
         Long questionId = question.getId();
         MvcResult result = mockMvc.perform(post("/questions/" + questionId + "/answers")
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(header().string(LOCATION, matchesRegex("/questions/\\d*/answers/\\d*")))
-                .andReturn();
+            .header(AUTHORIZATION, token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(requestBody))
+            .andExpect(status().isCreated())
+            .andExpect(header().string(LOCATION, matchesRegex("/questions/\\d*/answers/\\d*")))
+            .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         AnswerResponse response = objectMapper.readValue(responseBody, AnswerResponse.class);
@@ -106,23 +106,19 @@ public class AnswerTests extends AuthTestStep {
 
         List<Long> questionIds = Arrays.asList(question.getId(), question1.getId());
         List<String> contents = Arrays.asList("contents1", "contents2", "contents3", "contents4");
-        answerRepository.save(new Answer(null, questionIds.get(0), contents.get(0), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(0), contents.get(1), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(1), contents.get(2), LocalDateTime.now(),
-                LocalDateTime.now()));
-        answerRepository.save(new Answer(null, questionIds.get(1), contents.get(3), LocalDateTime.now(),
-                LocalDateTime.now()));
+        createFixture(questionIds.get(0), contents.get(0));
+        createFixture(questionIds.get(0), contents.get(1));
+        createFixture(questionIds.get(1), contents.get(2));
+        createFixture(questionIds.get(1), contents.get(3));
 
         MvcResult result = mockMvc.perform(get("/questions/" + questionIds.get(1) + "/answers")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         CollectionType collectionType = objectMapper.getTypeFactory()
-                .constructCollectionType(List.class, QuestionResponse.class);
+            .constructCollectionType(List.class, QuestionResponse.class);
         List<QuestionResponse> responses = objectMapper.readValue(responseBody, collectionType);
 
         assertThat(responses.size()).isEqualTo(2);
@@ -132,22 +128,22 @@ public class AnswerTests extends AuthTestStep {
 
     @Test
     public void update() throws Exception {
-        Answer saved = answerRepository.save(
-                new Answer(null, question.getId(), "contents", LocalDateTime.now(), LocalDateTime.now()));
+        String contents = "contents";
+        Answer saved = createFixture(1L, contents);
 
         String updatedContents = "updatedContents";
         String requestBody = objectMapper.writeValueAsString(new AnswerRequest(updatedContents));
 
         MvcResult result = mockMvc.perform(put("/questions/" + question.getId() + "/answers/" + saved.getId())
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andReturn();
+            .header(AUTHORIZATION, token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(requestBody))
+            .andExpect(status().isOk())
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
         AnswerResponse response = objectMapper.readValue(responseBody, AnswerResponse.class);
 
         assertThat(response.getId()).isEqualTo(saved.getId());
@@ -159,12 +155,13 @@ public class AnswerTests extends AuthTestStep {
 
     @Test
     public void delete() throws Exception {
-        Answer saved = answerRepository.save(new Answer(null, question.getId(), "contents", null, null));
+        String contents = "contents";
+        Answer saved = createFixture(question.getId(), contents);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId())
-                        .header(AUTHORIZATION, token))
-                .andExpect(status().isNoContent());
+            MockMvcRequestBuilders.delete("/questions/" + saved.getQuestionId() + "/answers/" + saved.getId())
+                .header(AUTHORIZATION, token))
+            .andExpect(status().isNoContent());
 
         assertThat(answerRepository.findById(saved.getId())).isNotPresent();
     }
@@ -174,15 +171,15 @@ public class AnswerTests extends AuthTestStep {
         String body = objectMapper.writeValueAsString(new AnswerRequest("contents"));
 
         MvcResult result = mockMvc.perform(post("/questions/-1/answers")
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .header(AUTHORIZATION, token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(body))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
 
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
@@ -192,22 +189,21 @@ public class AnswerTests extends AuthTestStep {
     @Test
     void update_WhenSameContents_ThenThrowException() throws Exception {
         String contents = "contents";
-        Answer saved = answerRepository.save(
-                new Answer(null, question.getId(), contents, LocalDateTime.now(), LocalDateTime.now()));
+        Answer saved = createFixture(question.getId(), contents);
 
         String body = objectMapper.writeValueAsString(new AnswerRequest(contents));
 
         MvcResult result = mockMvc.perform(put("/questions/{questionId}/answers/{answerId}",
-                question.getId(), saved.getId())
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            question.getId(), saved.getId())
+            .header(AUTHORIZATION, token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(body))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
 
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
@@ -220,15 +216,15 @@ public class AnswerTests extends AuthTestStep {
         String body = objectMapper.writeValueAsString(new AnswerRequest(emptyContents));
 
         MvcResult result = mockMvc.perform(post("/questions/{questionId}/answers", question.getId())
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .header(AUTHORIZATION, token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(body))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
 
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
@@ -240,17 +236,23 @@ public class AnswerTests extends AuthTestStep {
         long notExistId = -1L;
 
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.delete("/questions/{questionId}/answers/{answerId}",
-                        question.getId(), notExistId)
-                        .header(AUTHORIZATION, token))
-                .andExpect(status().isNotFound())
-                .andReturn();
+            MockMvcRequestBuilders.delete("/questions/{questionId}/answers/{answerId}",
+                question.getId(), notExistId)
+                .header(AUTHORIZATION, token))
+            .andExpect(status().isNotFound())
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
 
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
         assertThat(response.getMessage()).contains("No class");
     }
+
+    private Answer createFixture(Long questionId, String contents) {
+        return answerRepository.save(new Answer(null, questionId, contents, null, LocalDateTime.now(),
+            LocalDateTime.now()));
+    }
+
 }

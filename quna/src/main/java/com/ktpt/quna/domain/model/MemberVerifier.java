@@ -14,7 +14,7 @@ public class MemberVerifier {
     private final JwtTokenProvider jwtTokenProvider;
 
     public MemberVerifier(MemberRepository memberRepository, PasswordEncoder encoder,
-            JwtTokenProvider jwtTokenProvider) {
+        JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.encoder = encoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -34,7 +34,7 @@ public class MemberVerifier {
         String errorMessage = "요청과 일치하는 회원이 존재하지 않습니다.";
 
         Member member = memberRepository.findByNickname(request.getNickname())
-                .orElseThrow(() -> new IllegalArgumentException(errorMessage));
+            .orElseThrow(() -> new IllegalArgumentException(errorMessage));
 
         if (!encoder.matches(request.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException(errorMessage);

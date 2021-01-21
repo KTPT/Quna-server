@@ -24,7 +24,7 @@ public class QuestionRequest {
     }
 
     public Question toEntity() {
-        return new Question(null, title, contents, responderId, null, null);
+        return new Question(null, title, contents, null, responderId, null, null);
     }
 
     public String getTitle() {

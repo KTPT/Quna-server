@@ -35,11 +35,11 @@ public class AnswerController {
     @LoginRequired
     @PostMapping
     public ResponseEntity<AnswerResponse> create(@PathVariable Long questionId,
-            @RequestBody @Valid AnswerRequest request) {
+        @RequestBody @Valid AnswerRequest request) {
         AnswerResponse response = answerService.create(request, questionId);
 
         return ResponseEntity.created(URI.create("/questions/" + questionId + "/answers/" + response.getId()))
-                .body(response);
+            .body(response);
     }
 
     @GetMapping
@@ -55,7 +55,7 @@ public class AnswerController {
     @LoginRequired
     @PutMapping("/{id}")
     public ResponseEntity<AnswerResponse> update(@PathVariable Long questionId, @PathVariable Long id,
-            @RequestBody @Valid AnswerRequest request) {
+        @RequestBody @Valid AnswerRequest request) {
         AnswerResponse response = answerService.update(id, request);
         return ResponseEntity.ok(response);
     }

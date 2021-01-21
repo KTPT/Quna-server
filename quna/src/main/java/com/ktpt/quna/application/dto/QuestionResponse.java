@@ -23,7 +23,7 @@ public class QuestionResponse {
     }
 
     public QuestionResponse(Long id, String title, String contents, Long responderId,
-            String createdAt, String lastModifiedAt) {
+        String createdAt, String lastModifiedAt) {
         this.id = id;
         this.title = title;
         this.contents = contents;
@@ -34,14 +34,14 @@ public class QuestionResponse {
 
     public static QuestionResponse from(Question question) {
         return new QuestionResponse(question.getId(), question.getTitle(), question.getContents(),
-                question.getResponderId(), question.getCreatedAt().toString(),
-                question.getLastModifiedAt().toString());
+            question.getResponderId(), question.getCreatedAt().toString(),
+            question.getLastModifiedAt().toString());
     }
 
     public static List<QuestionResponse> listOf(List<Question> questions) {
         return questions.stream()
-                .map(QuestionResponse::from)
-                .collect(Collectors.toList());
+            .map(QuestionResponse::from)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

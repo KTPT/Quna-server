@@ -25,7 +25,7 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
     private final MemberRepository repository;
 
     public LoginRequiredInterceptor(JwtTokenProvider jwtTokenProvider, TokenExtractor tokenExtractor,
-            MemberRepository repository) {
+        MemberRepository repository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.tokenExtractor = tokenExtractor;
         this.repository = repository;
@@ -58,6 +58,6 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
 
     private <A extends Annotation> A getMethodAnnotation(HandlerMethod handlerMethod, Class<A> annotationType) {
         return Optional.ofNullable(handlerMethod.getMethod().getAnnotation(annotationType))
-                .orElse(handlerMethod.getBeanType().getAnnotation(annotationType));
+            .orElse(handlerMethod.getBeanType().getAnnotation(annotationType));
     }
 }

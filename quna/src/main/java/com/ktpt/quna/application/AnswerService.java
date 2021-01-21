@@ -38,7 +38,7 @@ public class AnswerService {
     @Transactional
     public AnswerResponse update(Long id, AnswerRequest request) {
         Answer answer = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 Answer, id = " + id));
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 Answer, id = " + id));
         answer.update(request.getContents());
 
         return AnswerResponse.from(answer);

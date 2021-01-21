@@ -18,8 +18,8 @@ public class AuthConfig implements WebMvcConfigurer {
     private final LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver;
 
     public AuthConfig(LoginRequiredInterceptor loginRequiredInterceptor,
-            LoginMemberIdInterceptor loginMemberIdInterceptor,
-            LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver) {
+        LoginMemberIdInterceptor loginMemberIdInterceptor,
+        LoginMemberMethodArgumentResolver loginMemberMethodArgumentResolver) {
         this.loginRequiredInterceptor = loginRequiredInterceptor;
         this.loginMemberIdInterceptor = loginMemberIdInterceptor;
         this.loginMemberMethodArgumentResolver = loginMemberMethodArgumentResolver;

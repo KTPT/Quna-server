@@ -25,7 +25,7 @@ public class LoginMemberIdInterceptor implements HandlerInterceptor {
     private final MemberRepository repository;
 
     public LoginMemberIdInterceptor(JwtTokenProvider jwtTokenProvider,
-            TokenExtractor tokenExtractor, MemberRepository repository) {
+        TokenExtractor tokenExtractor, MemberRepository repository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.tokenExtractor = tokenExtractor;
         this.repository = repository;
@@ -58,10 +58,10 @@ public class LoginMemberIdInterceptor implements HandlerInterceptor {
     }
 
     private <A extends Annotation> Optional<A> getParameterAnnotation(HandlerMethod handlerMethod,
-            Class<A> annotationType) {
+        Class<A> annotationType) {
         return Arrays.stream(handlerMethod.getMethodParameters())
-                .filter(parameter -> parameter.hasParameterAnnotation(annotationType))
-                .map(parameter -> parameter.getParameterAnnotation(annotationType))
-                .findFirst();
+            .filter(parameter -> parameter.hasParameterAnnotation(annotationType))
+            .map(parameter -> parameter.getParameterAnnotation(annotationType))
+            .findFirst();
     }
 }

@@ -24,11 +24,11 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + VALIDATION_INTERVAL);
 
         return Jwts.builder()
-                .claim("memberId", memberId)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
+            .claim("memberId", memberId)
+            .setIssuedAt(now)
+            .setExpiration(validity)
+            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+            .compact();
     }
 
     public Long getMemberId(String token) {

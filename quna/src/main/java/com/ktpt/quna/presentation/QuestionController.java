@@ -35,7 +35,7 @@ public class QuestionController {
     public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.create(request);
         return ResponseEntity.created(URI.create("/questions/" + response.getId()))
-                .body(response);
+            .body(response);
     }
 
     @LoginRequired
