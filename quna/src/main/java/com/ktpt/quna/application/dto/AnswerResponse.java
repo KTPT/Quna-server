@@ -1,9 +1,9 @@
 package com.ktpt.quna.application.dto;
 
-import com.ktpt.quna.domain.model.Answer;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.ktpt.quna.domain.model.Answer;
 
 public class AnswerResponse {
     private final Long id;
@@ -30,13 +30,13 @@ public class AnswerResponse {
 
     public static AnswerResponse from(Answer answer) {
         return new AnswerResponse(answer.getId(), answer.getQuestionId(), answer.getContents(),
-                answer.getCreatedAt().toString(), answer.getLastModifiedAt().toString());
+            answer.getCreatedAt().toString(), answer.getLastModifiedAt().toString());
     }
 
     public static List<AnswerResponse> listOf(List<Answer> answers) {
         return answers.stream()
-                .map(AnswerResponse::from)
-                .collect(Collectors.toList());
+            .map(AnswerResponse::from)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

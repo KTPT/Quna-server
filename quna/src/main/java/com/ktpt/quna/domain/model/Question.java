@@ -1,7 +1,14 @@
 package com.ktpt.quna.domain.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Question {
@@ -25,7 +32,7 @@ public class Question {
     }
 
     public Question(Long id, String title, String contents, Member author, Long responderId,
-                    LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+        LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.id = id;
         this.title = title;
         this.contents = contents;

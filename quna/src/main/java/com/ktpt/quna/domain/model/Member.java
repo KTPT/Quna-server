@@ -1,9 +1,14 @@
 package com.ktpt.quna.domain.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Member {
@@ -17,7 +22,7 @@ public class Member {
     private String avatarUrl;
 
     @OneToMany(mappedBy = "author")
-    private List<Answer> answers = new ArrayList<>();
+    private final List<Answer> answers = new ArrayList<>();
 
     private LocalDateTime createdAt;
 
@@ -30,6 +35,11 @@ public class Member {
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.createdAt = createdAt;
+    }
+
+    public Member create() {
+        createdAt = LocalDateTime.now();
+        return this;
     }
 
     public Long getId() {

@@ -1,8 +1,8 @@
 package com.ktpt.quna.application.dto;
 
-import com.ktpt.quna.domain.model.Question;
-
 import javax.validation.constraints.NotBlank;
+
+import com.ktpt.quna.domain.model.Question;
 
 public class QuestionRequest {
     @NotBlank

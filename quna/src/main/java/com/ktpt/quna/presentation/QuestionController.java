@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ktpt.quna.application.QuestionService;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.infra.annotation.LoginRequired;
 
 @RequestMapping("/questions")
 @RestController
@@ -29,13 +30,15 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    @LoginRequired
     @PostMapping
     public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.create(request);
         return ResponseEntity.created(URI.create("/questions/" + response.getId()))
-                .body(response);
+            .body(response);
     }
 
+    @LoginRequired
     @PutMapping("/{id}")
     public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.update(id, request);
@@ -54,6 +57,7 @@ public class QuestionController {
         return ResponseEntity.ok(response);
     }
 
+    @LoginRequired
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         questionService.delete(id);

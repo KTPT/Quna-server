@@ -1,6 +1,8 @@
 package com.ktpt.quna.presentation.verifier;
 
-import com.ktpt.quna.domain.model.QuestionRepository;
+import java.util.Arrays;
+import java.util.List;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -8,8 +10,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
+import com.ktpt.quna.domain.model.QuestionRepository;
 
 @Aspect
 @Component
@@ -28,12 +29,12 @@ public class RequestAspect {
 
     @Before("questionShouldExist()")
     public void verifyQuestion(JoinPoint joinPoint) {
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
 
         List<String> parameters = Arrays.asList(methodSignature.getParameterNames());
 
         try {
-            Long questionId = (Long) joinPoint.getArgs()[parameters.indexOf(QUESTION_ID)];
+            Long questionId = (Long)joinPoint.getArgs()[parameters.indexOf(QUESTION_ID)];
 
             if (!questionRepository.existsById(questionId)) {
                 throw new InvalidRequestException("존재하지 않는 question, id: " + questionId);
