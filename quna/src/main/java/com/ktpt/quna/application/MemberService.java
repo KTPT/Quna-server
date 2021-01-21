@@ -31,6 +31,6 @@ public class MemberService {
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest request) {
         String token = memberVerifier.getToken(request);
-        return TokenResponse.of(token);
+        return TokenResponse.from(token);
     }
 }

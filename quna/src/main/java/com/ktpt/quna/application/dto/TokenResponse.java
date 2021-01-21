@@ -15,7 +15,7 @@ public class TokenResponse {
         this.token = token;
     }
 
-    public static TokenResponse of(String token) {
+    public static TokenResponse from(String token) {
         return new TokenResponse(BEARER, token);
     }
 
