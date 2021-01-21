@@ -2,7 +2,10 @@ package com.ktpt.quna.application.dto;
 
 import com.ktpt.quna.domain.model.Answer;
 
+import javax.validation.constraints.NotBlank;
+
 public class AnswerRequest {
+    @NotBlank
     private final String contents;
 
     private AnswerRequest() {

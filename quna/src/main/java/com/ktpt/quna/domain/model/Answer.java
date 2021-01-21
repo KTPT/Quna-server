@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Answer {
+    private static final String UPDATE_FAIL_MESSAGE = "동일한 내용으로 수정할 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "answer_id")
     private Long id;
     private Long questionId;
     private String contents;
@@ -34,18 +34,20 @@ public class Answer {
     }
 
     public void create() {
-//        setAuthor(author);
         createdAt = LocalDateTime.now();
         lastModifiedAt = LocalDateTime.now();
     }
 
-    public Member getAuthor() {
-        return author;
-    }
-
     public void update(String contents) {
+        verify(contents);
         this.contents = contents;
         lastModifiedAt = LocalDateTime.now();
+    }
+
+    private void verify(String contents) {
+        if (this.contents.equals(contents)) {
+            throw new IllegalArgumentException(UPDATE_FAIL_MESSAGE);
+        }
     }
 
     public Long getId() {
@@ -60,9 +62,8 @@ public class Answer {
         return contents;
     }
 
-    public void setAuthor(Member author) {
-        this.author = author;
-        author.getAnswers().add(this);
+    public Member getAuthor() {
+        return author;
     }
 
     public LocalDateTime getCreatedAt() {

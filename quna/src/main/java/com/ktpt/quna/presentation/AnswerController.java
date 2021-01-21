@@ -3,14 +3,17 @@ package com.ktpt.quna.presentation;
 import com.ktpt.quna.application.AnswerService;
 import com.ktpt.quna.application.dto.AnswerRequest;
 import com.ktpt.quna.application.dto.AnswerResponse;
+import com.ktpt.quna.presentation.verifier.QuestionShouldExist;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-@RestController
+@QuestionShouldExist
 @RequestMapping("/questions/{questionId}/answers")
+@RestController
 public class AnswerController {
 
     private final AnswerService answerService;
@@ -20,7 +23,7 @@ public class AnswerController {
     }
 
     @PostMapping
-    public ResponseEntity<AnswerResponse> create(@RequestBody AnswerRequest request, @PathVariable Long questionId) {
+    public ResponseEntity<AnswerResponse> create(@PathVariable Long questionId, @RequestBody @Valid AnswerRequest request) {
         AnswerResponse response = answerService.create(request, questionId);
 
         return ResponseEntity.created(URI.create("/questions/" + questionId + "/answers/" + response.getId()))
@@ -35,7 +38,7 @@ public class AnswerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AnswerResponse> update(@PathVariable Long questionId, @PathVariable Long id,
-                                                 @RequestBody AnswerRequest request) {
+                                                 @RequestBody @Valid AnswerRequest request) {
         AnswerResponse response = answerService.update(questionId, id, request);
         return ResponseEntity.ok(response);
     }
