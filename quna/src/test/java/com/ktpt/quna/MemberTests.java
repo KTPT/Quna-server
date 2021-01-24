@@ -114,7 +114,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname, password);
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -138,7 +138,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname + "notExist", password);
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -159,7 +159,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname, password + "incorrect");
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))

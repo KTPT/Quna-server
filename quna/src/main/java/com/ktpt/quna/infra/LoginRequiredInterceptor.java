@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import com.ktpt.quna.application.exception.InvalidTokenException;
 import com.ktpt.quna.domain.model.MemberRepository;
@@ -33,6 +34,10 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (handler instanceof ResourceHttpRequestHandler) {
+            return true;
+        }
+
         LoginRequired annotation = getMethodAnnotation((HandlerMethod)handler, LoginRequired.class);
         if (Objects.isNull(annotation)) {
             return true;
