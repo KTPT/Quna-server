@@ -7,24 +7,22 @@ import com.ktpt.quna.domain.model.Member;
 public class MemberResponse {
     private final Long id;
     private final String nickname;
-    private final String password;
     private final LocalDateTime createdAt;
     private final String avatarUrl;
 
     private MemberResponse() {
-        this(null, null, null, null, null);
+        this(null, null, null, null);
     }
 
-    public MemberResponse(Long id, String nickname, String password, LocalDateTime createdAt, String avatarUrl) {
+    public MemberResponse(Long id, String nickname, LocalDateTime createdAt, String avatarUrl) {
         this.id = id;
         this.nickname = nickname;
-        this.password = password;
         this.createdAt = createdAt;
         this.avatarUrl = avatarUrl;
     }
 
     public static MemberResponse of(Member member) {
-        return new MemberResponse(member.getId(), member.getNickname(), member.getPassword(), member.getCreatedAt(),
+        return new MemberResponse(member.getId(), member.getNickname(), member.getCreatedAt(),
             member.getAvatarUrl());
     }
 
@@ -34,10 +32,6 @@ public class MemberResponse {
 
     public String getNickname() {
         return nickname;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public LocalDateTime getCreatedAt() {

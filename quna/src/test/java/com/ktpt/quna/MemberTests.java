@@ -79,7 +79,6 @@ public class MemberTests {
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getNickname()).isEqualTo(nickname);
-        assertThat(encoder.matches(password, response.getPassword())).isTrue();
         assertThat(response.getAvatarUrl()).isEqualTo(avatarUrl);
     }
 
