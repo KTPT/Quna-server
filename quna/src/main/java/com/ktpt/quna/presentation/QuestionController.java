@@ -19,6 +19,7 @@ import com.ktpt.quna.application.QuestionService;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.infra.annotation.LoginRequired;
+import io.swagger.annotations.ApiImplicitParam;
 
 @RequestMapping("/questions")
 @RestController
@@ -31,6 +32,7 @@ public class QuestionController {
     }
 
     @LoginRequired
+    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
     @PostMapping
     public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.create(request);
@@ -39,6 +41,7 @@ public class QuestionController {
     }
 
     @LoginRequired
+    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
     @PutMapping("/{id}")
     public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody @Valid QuestionRequest request) {
         QuestionResponse response = questionService.update(id, request);
@@ -58,6 +61,7 @@ public class QuestionController {
     }
 
     @LoginRequired
+    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         questionService.delete(id);

@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +29,7 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + response.getId())).body(response);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
         TokenResponse response = memberService.login(request);
         return ResponseEntity.ok(response);

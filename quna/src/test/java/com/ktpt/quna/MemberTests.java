@@ -79,7 +79,6 @@ public class MemberTests {
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getNickname()).isEqualTo(nickname);
-        assertThat(encoder.matches(password, response.getPassword())).isTrue();
         assertThat(response.getAvatarUrl()).isEqualTo(avatarUrl);
     }
 
@@ -114,7 +113,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname, password);
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -138,7 +137,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname + "notExist", password);
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -159,7 +158,7 @@ public class MemberTests {
 
         LoginRequest request = new LoginRequest(nickname, password + "incorrect");
 
-        MvcResult mvcResult = mockMvc.perform(get("/login")
+        MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
