@@ -25,7 +25,7 @@ public class MemberService {
     public MemberResponse create(MemberCreateRequest request) {
         Member member = memberVerifier.toEntity(request);
         Member saved = memberRepository.save(member.create());
-        return MemberResponse.of(saved);
+        return MemberResponse.from(saved);
     }
 
     @Transactional(readOnly = true)

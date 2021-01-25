@@ -21,7 +21,7 @@ public class MemberResponse {
         this.avatarUrl = avatarUrl;
     }
 
-    public static MemberResponse of(Member member) {
+    public static MemberResponse from(Member member) {
         return new MemberResponse(member.getId(), member.getNickname(), member.getCreatedAt(),
             member.getAvatarUrl());
     }

@@ -1,7 +1,11 @@
 package com.ktpt.quna.application.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class MemberCreateRequest {
+    @NotBlank
     private final String nickname;
+    @NotBlank
     private final String password;
     private final String avatarUrl;
 

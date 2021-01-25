@@ -2,6 +2,8 @@ package com.ktpt.quna.presentation;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,13 +24,13 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> create(@RequestBody MemberCreateRequest request) {
+    public ResponseEntity<MemberResponse> create(@RequestBody @Valid MemberCreateRequest request) {
         MemberResponse response = memberService.create(request);
         return ResponseEntity.created(URI.create("/members/" + response.getId())).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
         TokenResponse response = memberService.login(request);
         return ResponseEntity.ok(response);
     }

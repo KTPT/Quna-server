@@ -160,14 +160,37 @@ public class MemberTests {
 
         MvcResult mvcResult = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         ErrorResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                ErrorResponse.class);
+            ErrorResponse.class);
 
         assertThat(response.getMessage()).isEqualTo("요청과 일치하는 회원이 존재하지 않습니다.");
     }
+
+    @Test
+    void request_WhenEmptyNicknameAndPassword_ThenThrowException() throws Exception {
+        String emptyNickname = " ";
+        String emptyPassword = " ";
+        String avatarUrl = "abcde";
+
+        String requestBody = objectMapper.writeValueAsString(
+            new MemberCreateRequest(emptyNickname, emptyPassword, avatarUrl));
+
+        MvcResult mvcResult = mockMvc.perform(post("/members")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(requestBody))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
+
+        assertThat(response.getMessage()).isEqualTo("must not be blank");
+    }
+
 }
