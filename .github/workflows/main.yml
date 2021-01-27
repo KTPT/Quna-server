@@ -35,7 +35,8 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./quna/gradelw clean build
+        working-directory: ./quna
+        run: ./gradelw clean build
         shell: bash
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
