@@ -56,8 +56,8 @@ jobs:
       - name: Zip jar, appspec.yml, deploy.sh files
         working-directory: ./quna/build/libs
         run: |
-          mv ../../../appspec.yml .
-          mv ../../../deploy.sh .
+          cp ../../../appspec.yml appspec.yml
+          cp ../../../deploy.sh deploy.sh
           zip back.zip *.jar appspec.yml deploy.sh
           rm *.jar *.yml *.sh
         shell: bash
