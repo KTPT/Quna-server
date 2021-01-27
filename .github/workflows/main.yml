@@ -42,5 +42,5 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
       - name: Echo JWT_SECRET
-        run: echo ${{ secrets.JWT_SECRET }}
+        run: echo `${{ secrets.JWT_SECRET }}`
         
