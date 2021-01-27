@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-echo "hello Quna!"
-touch work.txt
+cd ..
 
-#cd ..
-#
-#docker rm $(docker container ps -a -q --filter ancestor=back)
-#
-#docker run -d --name jdk back
+docker rm $(docker container ps -a -q --filter ancestor=back)
+
+docker rmi back
+
+docker build --tag back
+
+docker run -d --name back-container back
