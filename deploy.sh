@@ -2,9 +2,9 @@
 
 cd ..
 
-docker stop $(docker container ps -a -q --filter ancestor=back)
+docker stop $(docker container ps -a -q --filter name=back-container)
 
-docker rm $(docker container ps -a -q --filter ancestor=back)
+docker rm $(docker container ps -a -q --filter name=back-container)
 
 docker rmi $(docker images --filter=reference='back:*' -qa)
 
