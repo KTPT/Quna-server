@@ -41,6 +41,11 @@ jobs:
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         
-      - name: Echo JWT_SECRET
-        run: echo `${{ secrets.JWT_SECRET }}`
-        
+      - name: Zip jar, appspec.yml, deploy.sh files
+        working-directory: ./quna/build/libs
+        run: |
+          mv ../../../appspec.yml .
+          mv ../../../deploy.sh .
+          zip back.zip *.jar appspec.yml deploy.sh
+          rm *.jar *.yml *.sh
+        shell: bash
