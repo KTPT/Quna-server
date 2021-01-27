@@ -34,6 +34,16 @@ jobs:
         run: chmod +x gradlew
         shell: bash
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./quna/.gradle/caches
+            ./quna/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Build with Gradle
         working-directory: ./quna
         run: ./gradlew clean build
