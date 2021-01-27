@@ -82,7 +82,7 @@ public class QuestionTests extends AuthTestStep {
 
         QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
 
-        assertThat(response.getId()).isEqualTo(1);
+        assertThat(response.getId()).isNotNull();
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContents()).isEqualTo(contents);
         assertThat(response.getResponderId()).isNull();
