@@ -34,19 +34,7 @@ jobs:
         run: chmod +x gradlew
         shell: bash
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v2
-        id: cache
-        with:
-          path: |
-            ./quna/.gradle/caches
-            ./quna/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Build with Gradle
-        if: steps.cache.outputs.cache-hit != 'true'
         working-directory: ./quna
         run: ./gradlew clean build
         shell: bash
@@ -56,8 +44,8 @@ jobs:
       - name: Zip jar, appspec.yml, deploy.sh files
         working-directory: ./quna/build/libs
         run: |
-          cp ../../../appspec.yml appspec.yml
-          cp ../../../deploy.sh deploy.sh
+          mv ../../../appspec.yml .
+          mv ../../../deploy.sh .
           zip back.zip *.jar appspec.yml deploy.sh
           rm *.jar *.yml *.sh
         shell: bash
