@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-cd ..
-
 docker stop $(docker container ps -a -q --filter name=back-container)
 
 docker rm $(docker container ps -a -q --filter name=back-container)
