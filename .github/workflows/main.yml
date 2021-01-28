@@ -40,8 +40,7 @@ jobs:
         shell: bash
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        
+
       - name: Zip jar, appspec.yml, deploy.sh files
         working-directory: ./quna/build/libs
         run: |
