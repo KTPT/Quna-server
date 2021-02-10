@@ -3,6 +3,7 @@ package com.ktpt.quna.presentation;
 import java.net.URI;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -25,46 +26,50 @@ import io.swagger.annotations.ApiImplicitParam;
 @RestController
 public class QuestionController {
 
-    private final QuestionService questionService;
+	private final QuestionService questionService;
 
-    public QuestionController(QuestionService questionService) {
-        this.questionService = questionService;
-    }
+	public QuestionController(QuestionService questionService) {
+		this.questionService = questionService;
+	}
 
-    @LoginRequired
-    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
-    @PostMapping
-    public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request) {
-        QuestionResponse response = questionService.create(request);
-        return ResponseEntity.created(URI.create("/questions/" + response.getId()))
-            .body(response);
-    }
+	@LoginRequired
+	@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+	@PostMapping
+	public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request,
+		HttpServletRequest httpRequest) {
 
-    @LoginRequired
-    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
-    @PutMapping("/{id}")
-    public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody @Valid QuestionRequest request) {
-        QuestionResponse response = questionService.update(id, request);
-        return ResponseEntity.ok(response);
-    }
+		Long authorId = (Long)httpRequest.getAttribute("memberId");
 
-    @GetMapping("/{id}")
-    public ResponseEntity<QuestionResponse> findById(@PathVariable Long id) {
-        QuestionResponse response = questionService.findById(id);
-        return ResponseEntity.ok(response);
-    }
+		QuestionResponse response = questionService.create(request, authorId);
+		return ResponseEntity.created(URI.create("/questions/" + response.getId()))
+			.body(response);
+	}
 
-    @GetMapping
-    public ResponseEntity<List<QuestionResponse>> findAll() {
-        List<QuestionResponse> response = questionService.findAll();
-        return ResponseEntity.ok(response);
-    }
+	@LoginRequired
+	@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+	@PutMapping("/{id}")
+	public ResponseEntity<QuestionResponse> update(@PathVariable Long id, @RequestBody @Valid QuestionRequest request) {
+		QuestionResponse response = questionService.update(id, request);
+		return ResponseEntity.ok(response);
+	}
 
-    @LoginRequired
-    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        questionService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<QuestionResponse> findById(@PathVariable Long id) {
+		QuestionResponse response = questionService.findById(id);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping
+	public ResponseEntity<List<QuestionResponse>> findAll() {
+		List<QuestionResponse> response = questionService.findAll();
+		return ResponseEntity.ok(response);
+	}
+
+	@LoginRequired
+	@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		questionService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 }

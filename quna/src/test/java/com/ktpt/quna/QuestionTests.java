@@ -48,18 +48,20 @@ public class QuestionTests extends AuthTestStep {
 
     private MockMvc mockMvc;
 
+    private Member defaultMember;
+
     @BeforeEach
     void setUp() {
         repository.deleteAll();
 
         clearMember();
-        Member member = createDefaultMember();
-        token = createToken(member.getId());
+        defaultMember = createDefaultMember();
+        token = createToken(defaultMember.getId());
 
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysDo(print())
-                .build();
+            .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .alwaysDo(print())
+            .build();
     }
 
     @Test
@@ -69,22 +71,26 @@ public class QuestionTests extends AuthTestStep {
         String body = objectMapper.writeValueAsString(new QuestionRequest(title, contents, null));
 
         MvcResult result = mockMvc.perform(post("/questions")
-                .header(AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, token)
+            .requestAttr("memberId", 1L)
+            .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(LOCATION, matchesRegex("/questions/\\d*")))
-                .andReturn();
+            .andReturn();
 
         String responseBody = result.getResponse()
-                .getContentAsString();
+            .getContentAsString();
 
         QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
 
         assertThat(response.getId()).isEqualTo(1);
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContents()).isEqualTo(contents);
+        assertThat(response.getAuthor().getId()).isEqualTo(1L);
+        assertThat(response.getAuthor().getNickname()).isEqualTo("승완");
+        assertThat(response.getAuthor().getAvatarUrl()).isEqualTo("haha");
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();
@@ -268,7 +274,7 @@ public class QuestionTests extends AuthTestStep {
     }
 
     private Question createFixture(String title, String contents, Long responderId) {
-        return repository.save(new Question(null, title, contents, null, responderId, LocalDateTime.now(),
-                LocalDateTime.now()));
+        return repository.save(new Question(null, title, contents, defaultMember, responderId, LocalDateTime.now(),
+            LocalDateTime.now()));
     }
 }

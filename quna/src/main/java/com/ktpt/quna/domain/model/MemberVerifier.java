@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.ktpt.quna.application.dto.LoginRequest;
 import com.ktpt.quna.application.dto.MemberCreateRequest;
+import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.infra.token.JwtTokenProvider;
 
 @Component
@@ -41,5 +42,11 @@ public class MemberVerifier {
         }
 
         return jwtTokenProvider.createToken(member.getId());
+    }
+
+    public Member getMember(Long id) {
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 Member, id = " + id));
+        return member;
     }
 }

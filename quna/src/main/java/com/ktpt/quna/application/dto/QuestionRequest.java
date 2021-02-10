@@ -2,6 +2,7 @@ package com.ktpt.quna.application.dto;
 
 import javax.validation.constraints.NotBlank;
 
+import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.Question;
 
 public class QuestionRequest {
@@ -23,8 +24,8 @@ public class QuestionRequest {
         this.responderId = responderId;
     }
 
-    public Question toEntity() {
-        return new Question(null, title, contents, null, responderId, null, null);
+    public Question toEntity(Member author) {
+        return new Question(null, title, contents, author, responderId, null, null);
     }
 
     public String getTitle() {

@@ -26,14 +26,19 @@ import com.ktpt.quna.application.dto.MemberCreateRequest;
 import com.ktpt.quna.application.dto.MemberResponse;
 import com.ktpt.quna.application.dto.TokenResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
+import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.MemberRepository;
+import com.ktpt.quna.domain.model.MemberVerifier;
 import com.ktpt.quna.infra.token.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MemberTests {
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberVerifier memberVerifier;
 
     private MockMvc mockMvc;
 
@@ -193,4 +198,12 @@ public class MemberTests {
         assertThat(response.getMessage()).isEqualTo("must not be blank");
     }
 
+    @Test
+    public void WhenMemberNotExist_ThenThrowException() throws Exception {
+        try {
+            memberVerifier.getMember(-1L);
+        } catch (NotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
