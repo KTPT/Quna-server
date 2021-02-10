@@ -3,7 +3,6 @@ package com.ktpt.quna.presentation;
 import java.net.URI;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ktpt.quna.application.QuestionService;
 import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
+import com.ktpt.quna.infra.annotation.LoginMemberId;
 import com.ktpt.quna.infra.annotation.LoginRequired;
 import io.swagger.annotations.ApiImplicitParam;
 
@@ -36,10 +36,7 @@ public class QuestionController {
 	@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
 	@PostMapping
 	public ResponseEntity<QuestionResponse> create(@RequestBody @Valid QuestionRequest request,
-		HttpServletRequest httpRequest) {
-
-		Long authorId = (Long)httpRequest.getAttribute("memberId");
-
+		@LoginMemberId Long authorId) {
 		QuestionResponse response = questionService.create(request, authorId);
 		return ResponseEntity.created(URI.create("/questions/" + response.getId()))
 			.body(response);

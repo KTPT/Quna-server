@@ -72,7 +72,6 @@ public class QuestionTests extends AuthTestStep {
 
         MvcResult result = mockMvc.perform(post("/questions")
             .header(AUTHORIZATION, token)
-            .requestAttr("memberId", 1L)
             .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -85,10 +84,10 @@ public class QuestionTests extends AuthTestStep {
 
         QuestionResponse response = objectMapper.readValue(responseBody, QuestionResponse.class);
 
-        assertThat(response.getId()).isEqualTo(1);
+        assertThat(response.getId()).isNotNull();
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContents()).isEqualTo(contents);
-        assertThat(response.getAuthor().getId()).isEqualTo(1L);
+        assertThat(response.getAuthor().getId()).isEqualTo(defaultMember.getId());
         assertThat(response.getAuthor().getNickname()).isEqualTo("승완");
         assertThat(response.getAuthor().getAvatarUrl()).isEqualTo("haha");
         assertThat(response.getResponderId()).isNull();
