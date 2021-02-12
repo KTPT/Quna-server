@@ -10,16 +10,20 @@ import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.MemberVerifier;
 import com.ktpt.quna.domain.model.Question;
+import com.ktpt.quna.domain.model.QuestionQuerydslRepository;
 import com.ktpt.quna.domain.model.QuestionRepository;
 
 @Service
 public class QuestionService {
 
 	private final QuestionRepository questionRepository;
+	private final QuestionQuerydslRepository questionQueryRepository;
 	private final MemberVerifier memberVerifier;
 
-	public QuestionService(QuestionRepository questionRepository, MemberVerifier memberVerifier) {
+	public QuestionService(QuestionRepository questionRepository,
+		QuestionQuerydslRepository questionQueryRepository, MemberVerifier memberVerifier) {
 		this.questionRepository = questionRepository;
+		this.questionQueryRepository = questionQueryRepository;
 		this.memberVerifier = memberVerifier;
 	}
 
@@ -51,7 +55,7 @@ public class QuestionService {
 
 	@Transactional(readOnly = true)
 	public List<QuestionResponse> findAll() {
-		return QuestionResponse.listOf(questionRepository.findAllWithMembers());
+		return QuestionResponse.listOf(questionQueryRepository.findAllWithMembers());
 	}
 
 	@Transactional

@@ -14,6 +14,8 @@ public class MemberVerifier {
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwtTokenProvider;
 
+    private static final String errorMessage = "요청과 일치하는 회원이 존재하지 않습니다.";
+
     public MemberVerifier(MemberRepository memberRepository, PasswordEncoder encoder,
         JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
@@ -31,12 +33,12 @@ public class MemberVerifier {
         return new Member(null, nickname, encoder.encode(request.getPassword()), request.getAvatarUrl(), null);
     }
 
-    public String getToken(LoginRequest request) {
-        String errorMessage = "요청과 일치하는 회원이 존재하지 않습니다.";
-
-        Member member = memberRepository.findByNickname(request.getNickname())
+    public Member findByNickname(LoginRequest request) {
+        return memberRepository.findByNickname(request.getNickname())
             .orElseThrow(() -> new IllegalArgumentException(errorMessage));
+    }
 
+    public String getToken(LoginRequest request, Member member) {
         if (!encoder.matches(request.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException(errorMessage);
         }

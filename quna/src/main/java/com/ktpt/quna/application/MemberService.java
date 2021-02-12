@@ -30,7 +30,8 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest request) {
-        String token = memberVerifier.getToken(request);
-        return TokenResponse.from(token);
+        Member member = memberVerifier.findByNickname(request);
+        String token = memberVerifier.getToken(request, member);
+        return TokenResponse.from(token, member);
     }
 }
