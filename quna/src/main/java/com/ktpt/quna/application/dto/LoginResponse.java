@@ -2,25 +2,25 @@ package com.ktpt.quna.application.dto;
 
 import com.ktpt.quna.domain.model.Member;
 
-public class TokenResponse {
+public class LoginResponse {
     private static final String BEARER = "bearer";
 
     private final String type;
     private final String token;
-    private final MemberInfo member;
+    private final MemberResponse member;
 
-    private TokenResponse() {
+    private LoginResponse() {
         this(null, null, null);
     }
 
-    public TokenResponse(String type, String token, MemberInfo member) {
+    public LoginResponse(String type, String token, MemberResponse member) {
         this.type = type;
         this.token = token;
         this.member = member;
     }
 
-    public static TokenResponse from(String token, Member member) {
-        return new TokenResponse(BEARER, token, MemberInfo.from(member));
+    public static LoginResponse from(String token, Member member) {
+        return new LoginResponse(BEARER, token, MemberResponse.from(member));
     }
 
     public String getType() {
@@ -31,7 +31,7 @@ public class TokenResponse {
         return token;
     }
 
-    public MemberInfo getMember() {
+    public MemberResponse getMember() {
         return member;
     }
 }

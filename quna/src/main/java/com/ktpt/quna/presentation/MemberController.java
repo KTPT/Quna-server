@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ktpt.quna.application.MemberService;
 import com.ktpt.quna.application.dto.LoginRequest;
+import com.ktpt.quna.application.dto.LoginResponse;
 import com.ktpt.quna.application.dto.MemberCreateRequest;
 import com.ktpt.quna.application.dto.MemberResponse;
-import com.ktpt.quna.application.dto.TokenResponse;
 
 @RestController
 public class MemberController {
@@ -30,8 +30,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        TokenResponse response = memberService.login(request);
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = memberService.login(request);
         return ResponseEntity.ok(response);
     }
 }

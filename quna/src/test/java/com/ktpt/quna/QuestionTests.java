@@ -88,8 +88,6 @@ public class QuestionTests extends AuthTestStep {
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContents()).isEqualTo(contents);
         assertThat(response.getAuthor().getId()).isEqualTo(defaultMember.getId());
-        assertThat(response.getAuthor().getNickname()).isEqualTo("승완");
-        assertThat(response.getAuthor().getAvatarUrl()).isEqualTo("haha");
         assertThat(response.getResponderId()).isNull();
         assertThat(response.getCreatedAt()).isNotNull();
         assertThat(response.getLastModifiedAt()).isNotNull();

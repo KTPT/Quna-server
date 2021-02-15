@@ -24,8 +24,9 @@ public class QuestionRequest {
         this.responderId = responderId;
     }
 
-    public Question toEntity(Member author) {
-        return new Question(null, title, contents, author, responderId, null, null);
+    public Question toEntity(Long authorId) {
+        return new Question(null, title, contents, new Member(authorId, null, null, null, null), responderId, null,
+            null);
     }
 
     public String getTitle() {

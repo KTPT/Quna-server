@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
-public class QuestionQuerydslRepository {
+public class QuestionQueryDao {
 
 	private final JPAQueryFactory query;
 
-	public QuestionQuerydslRepository(JPAQueryFactory query) {
+	public QuestionQueryDao(JPAQueryFactory query) {
 		this.query = query;
 	}
 

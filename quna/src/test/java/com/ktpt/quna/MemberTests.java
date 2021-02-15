@@ -22,23 +22,18 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktpt.quna.application.dto.LoginRequest;
+import com.ktpt.quna.application.dto.LoginResponse;
 import com.ktpt.quna.application.dto.MemberCreateRequest;
 import com.ktpt.quna.application.dto.MemberResponse;
-import com.ktpt.quna.application.dto.TokenResponse;
 import com.ktpt.quna.application.exception.ErrorResponse;
-import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.MemberRepository;
-import com.ktpt.quna.domain.model.MemberVerifier;
 import com.ktpt.quna.infra.token.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MemberTests {
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private MemberVerifier memberVerifier;
 
     private MockMvc mockMvc;
 
@@ -58,9 +53,9 @@ public class MemberTests {
     void setUp() {
         memberRepository.deleteAll();
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysDo(print())
-                .build();
+            .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .alwaysDo(print())
+            .build();
     }
 
     @Test
@@ -72,15 +67,15 @@ public class MemberTests {
         MemberCreateRequest request = new MemberCreateRequest(nickname, password, avatarUrl);
 
         MvcResult mvcResult = mockMvc.perform(post("/members")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(header().string(LOCATION, matchesRegex("/members/\\d*")))
-                .andExpect(status().isCreated())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(header().string(LOCATION, matchesRegex("/members/\\d*")))
+            .andExpect(status().isCreated())
+            .andReturn();
 
         MemberResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                MemberResponse.class);
+            MemberResponse.class);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getNickname()).isEqualTo(nickname);
@@ -97,14 +92,14 @@ public class MemberTests {
         MemberCreateRequest request = new MemberCreateRequest(nickname, password, avatarUrl);
 
         MvcResult mvcResult = mockMvc.perform(post("/members")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         ErrorResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                ErrorResponse.class);
+            ErrorResponse.class);
 
         assertThat(response.getMessage()).isEqualTo("중복된 닉네임입니다.");
     }
@@ -114,19 +109,19 @@ public class MemberTests {
         String nickname = "nickname";
         String password = "password";
         Member saved = memberRepository.save(
-                new Member(null, nickname, encoder.encode(password), "avatarUrl", null).create());
+            new Member(null, nickname, encoder.encode(password), "avatarUrl", null).create());
 
         LoginRequest request = new LoginRequest(nickname, password);
 
         MvcResult mvcResult = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
 
-        TokenResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                TokenResponse.class);
+        LoginResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+            LoginResponse.class);
 
         Long memberId = jwtTokenProvider.getMemberId(response.getToken());
 
@@ -143,14 +138,14 @@ public class MemberTests {
         LoginRequest request = new LoginRequest(nickname + "notExist", password);
 
         MvcResult mvcResult = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest())
+            .andReturn();
 
         ErrorResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                ErrorResponse.class);
+            ErrorResponse.class);
 
         assertThat(response.getMessage()).isEqualTo("요청과 일치하는 회원이 존재하지 않습니다.");
     }
@@ -164,7 +159,7 @@ public class MemberTests {
         LoginRequest request = new LoginRequest(nickname, password + "incorrect");
 
         MvcResult mvcResult = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isBadRequest())
@@ -196,14 +191,5 @@ public class MemberTests {
         ErrorResponse response = objectMapper.readValue(responseBody, ErrorResponse.class);
 
         assertThat(response.getMessage()).isEqualTo("must not be blank");
-    }
-
-    @Test
-    public void WhenMemberNotExist_ThenThrowException() throws Exception {
-        try {
-            memberVerifier.getMember(-1L);
-        } catch (NotFoundException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }
