@@ -9,18 +9,18 @@ import com.ktpt.quna.application.dto.QuestionRequest;
 import com.ktpt.quna.application.dto.QuestionResponse;
 import com.ktpt.quna.application.exception.NotFoundException;
 import com.ktpt.quna.domain.model.Question;
-import com.ktpt.quna.domain.model.QuestionQueryDao;
 import com.ktpt.quna.domain.model.QuestionRepository;
+import com.ktpt.quna.infra.QuestionQueryDAO;
 
 @Service
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final QuestionQueryDao questionQueryRepository;
+    private final QuestionQueryDAO questionQueryDAO;
 
-    public QuestionService(QuestionRepository questionRepository, QuestionQueryDao questionQueryRepository) {
+    public QuestionService(QuestionRepository questionRepository, QuestionQueryDAO questionQueryDAO) {
         this.questionRepository = questionRepository;
-        this.questionQueryRepository = questionQueryRepository;
+        this.questionQueryDAO = questionQueryDAO;
     }
 
     @Transactional
@@ -51,7 +51,7 @@ public class QuestionService {
 
     @Transactional(readOnly = true)
     public List<QuestionResponse> findAll() {
-        return QuestionResponse.listOf(questionQueryRepository.findAllWithMembers());
+        return QuestionResponse.listOf(questionQueryDAO.findAllWithMembers());
     }
 
     @Transactional
