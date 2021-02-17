@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ktpt.quna.application.dto.LoginRequest;
+import com.ktpt.quna.application.dto.LoginResponse;
 import com.ktpt.quna.application.dto.MemberCreateRequest;
 import com.ktpt.quna.application.dto.MemberResponse;
-import com.ktpt.quna.application.dto.TokenResponse;
 import com.ktpt.quna.domain.model.Member;
 import com.ktpt.quna.domain.model.MemberRepository;
 import com.ktpt.quna.domain.model.MemberVerifier;
@@ -29,8 +29,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest request) {
-        String token = memberVerifier.getToken(request);
-        return TokenResponse.from(token);
+    public LoginResponse login(LoginRequest request) {
+        return memberVerifier.login(request);
     }
 }

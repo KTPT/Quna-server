@@ -9,24 +9,21 @@ public class QuestionResponse {
     private final Long id;
     private final String title;
     private final String contents;
+    private final MemberResponse author;
     private final Long responderId;
     private final String createdAt;
     private final String lastModifiedAt;
 
     private QuestionResponse() {
-        id = null;
-        title = null;
-        contents = null;
-        responderId = null;
-        createdAt = null;
-        lastModifiedAt = null;
+        this(null, null, null, null, null, null, null);
     }
 
-    public QuestionResponse(Long id, String title, String contents, Long responderId,
+    public QuestionResponse(Long id, String title, String contents, MemberResponse author, Long responderId,
         String createdAt, String lastModifiedAt) {
         this.id = id;
         this.title = title;
         this.contents = contents;
+        this.author = author;
         this.responderId = responderId;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
@@ -34,7 +31,7 @@ public class QuestionResponse {
 
     public static QuestionResponse from(Question question) {
         return new QuestionResponse(question.getId(), question.getTitle(), question.getContents(),
-            question.getResponderId(), question.getCreatedAt().toString(),
+            MemberResponse.from(question.getAuthor()), question.getResponderId(), question.getCreatedAt().toString(),
             question.getLastModifiedAt().toString());
     }
 
@@ -54,6 +51,10 @@ public class QuestionResponse {
 
     public String getContents() {
         return contents;
+    }
+
+    public MemberResponse getAuthor() {
+        return author;
     }
 
     public Long getResponderId() {

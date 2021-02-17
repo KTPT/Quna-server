@@ -18,17 +18,12 @@ public class AuthTestStep {
     private JwtTokenProvider jwtTokenProvider;
 
     public Member createDefaultMember() {
-        return memberRepository.save(new Member(1L, "승완", "123", "haha", LocalDateTime.now()));
-    }
-
-    public Member createMember(Long memberId, String nickname, String password, LocalDateTime createdAt,
-            String avatarUrl) {
-        return memberRepository.save(new Member(memberId, nickname, password, avatarUrl, createdAt));
+        return memberRepository.save(new Member(null, "승완", "123", "haha", LocalDateTime.now()));
     }
 
     public String createToken(Long memberId) {
         String jwt = jwtTokenProvider.createToken(memberId);
-        return " " + jwt;
+        return "Bearer " + jwt;
     }
 
     public void clearMember() {
