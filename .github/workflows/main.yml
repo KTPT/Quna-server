@@ -30,15 +30,40 @@ jobs:
           java-version: 11
 
       - name: Grant execute permission for gradlew
+        working-directory: ./quna
         run: chmod +x gradlew
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradelw clean build
+        working-directory: ./quna
+        run: ./gradlew clean build
         shell: bash
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        
-      - name: Echo JWT_SECRET
-        run: echo ${{ secrets.JWT_SECRET }}
-        
+
+      - name: Zip jar, appspec.yml, deploy.sh files
+        working-directory: ./quna/build/libs
+        run: |
+          mv ../../../appspec.yml .
+          mv ../../../deploy.sh .
+          zip back.zip *.jar appspec.yml deploy.sh
+          rm *.jar *.yml *.sh
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Transfer to S3 for serving static
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: quna-server
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+          SOURCE_DIR: './quna/build/libs'
